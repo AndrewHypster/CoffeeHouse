@@ -1,5 +1,4 @@
 .form {
-  position: relative;
   background-color: var(--chart-3);
   padding: 1rem;
   overflow: hidden;
@@ -44,7 +43,7 @@
 }
 
 .formNav {
-  position: absolute;
+  position: fixed;
   z-index: 1;
   left: 0;
   bottom: 3rem;
