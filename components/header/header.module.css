@@ -1,0 +1,46 @@
+.header {
+  width: 100%;
+  background-color: var(--sidebar-foreground);
+  color: var(--background);
+  padding: .5rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.025em;
+}
+
+.nav {
+  width: fit-content;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.link {
+  position: relative;
+  font-weight: 500;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: .1em;
+  background-color: var(--accent);
+  transition: all .3s;
+  display: block;
+}
+
+.link:hover::after {
+  width: 100%;
+}
+
+@media (max-width: 680px) {
+  .nav {
+    display: none;
+  }
+}
