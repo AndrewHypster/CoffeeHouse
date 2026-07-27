@@ -22,18 +22,40 @@ const WritePoem = () => {
     } catch (err) {
       console.log(err);
     }
+
+    const handleSubmit = async (text) => {
+      const res = await fetch("/api/db", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ author: 'author', title: 'title', content: text }),
+      });
+
+      if (res.ok) {
+        // setAuthor("");
+        // setTitle("");
+        // setContent("");
+        // fetchPoems(); // оновлюємо список після додавання
+        alert('Успішно нідіслано в БД')
+      }
+    };
+    handleSubmit(text);
   };
 
   return (
     <form className={s.form} action={sendForm}>
       <div className={s.textBox}>
-        <textarea className={s.textArea} name="text" placeholder="Ваш вірш" required></textarea>
+        <textarea
+          className={s.textArea}
+          name="text"
+          placeholder="Ваш вірш"
+          required
+        ></textarea>
       </div>
       <div className={s.formNav}>
-          <Button type="submit">
-            <Send /> Надіслати
-          </Button>
-        </div>
+        <Button type="submit">
+          <Send /> Надіслати
+        </Button>
+      </div>
     </form>
   );
 };

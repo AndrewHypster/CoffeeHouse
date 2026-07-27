@@ -1,6 +1,6 @@
-import Header from "@/components/header";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Header from "../components/header";
 
 // Налаштовуємо шрифт Inter
 const inter = Inter({
