@@ -1,11 +1,24 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "../components/header";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarInset,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+import { HomeIcon, BookOpenIcon, PencilIcon } from "lucide-react";
+import { AppSidebar } from "@/components/app-sidebar";
 
 // Налаштовуємо шрифт Inter
 const inter = Inter({
   subsets: ["latin", "cyrillic"], // додаємо кирилицю, якщо потрібна українська
-  variable: "--font-inter",      // створюємо CSS-змінну
+  variable: "--font-inter", // створюємо CSS-змінну
 });
 
 export const metadata = {
@@ -15,16 +28,16 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="ua"
-    >
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <div className="wrapper">
-          <Header />
-        {children}
-        </div>
-        
-        </body>
+    <html lang="ua">
+      <body className={`${inter.variable} font-sans antialiased flex`}>
+        <SidebarProvider>
+          <AppSidebar />
+          <div className="wrapper">
+            <Header />
+            {children}
+          </div>
+        </SidebarProvider>
+      </body>
     </html>
   );
 }

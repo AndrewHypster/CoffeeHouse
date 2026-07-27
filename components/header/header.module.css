@@ -1,10 +1,20 @@
 .header {
+  position: sticky;
+  top: 0;
   width: 100%;
-  background-color: var(--sidebar-foreground);
+  background-color: var(--foreground);
   color: var(--background);
-  padding: .5rem 2rem;
+  padding: 0.75rem 1.5rem;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  position: relative;
+  z-index: 20;
+}
+
+.left {
+  display: flex;
   align-items: center;
 }
 
@@ -26,12 +36,12 @@
 }
 
 .link::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
-  height: .1em;
+  height: 0.1em;
   background-color: var(--accent);
-  transition: all .3s;
+  transition: all 0.3s;
   display: block;
 }
 
