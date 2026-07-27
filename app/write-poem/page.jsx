@@ -28,12 +28,12 @@ const WritePoem = () => {
     <form className={s.form} action={sendForm}>
       <div className={s.textBox}>
         <textarea className={s.textArea} name="text" placeholder="Ваш вірш" required></textarea>
-        <div className={s.formNav}>
+      </div>
+      <div className={s.formNav}>
           <Button type="submit">
             <Send /> Надіслати
           </Button>
         </div>
-      </div>
     </form>
   );
 };

@@ -1,4 +1,5 @@
 .form {
+  position: relative;
   background-color: var(--chart-3);
   padding: 1rem;
   overflow: hidden;
