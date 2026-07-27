@@ -46,7 +46,7 @@
   position: fixed;
   z-index: 1;
   left: 0;
-  bottom: 3rem;
+  bottom: 2rem;
   width: 100%;
   padding: 0 2rem;
   justify-content: center;
@@ -57,6 +57,9 @@
   .form {
     padding: 0;
     padding-top: .5rem;
+  }
+  .textBox {
+  padding-bottom: 8rem;
   }
   .formNav {
     scale: 1.2;
