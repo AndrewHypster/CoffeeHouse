@@ -4,7 +4,7 @@ import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import s from "./header.module.css";
 import { Button } from "../ui/button";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const Header = () => {
   const { status } = useSession();
@@ -27,12 +27,15 @@ const Header = () => {
         <Link className={s.link} href="/write-poem">
           Написати вірш
         </Link>
-        {status == "authenticated" ||
-          (status != "loading" && (
-            <Button onClick={() => signIn("google", { callbackUrl: "/" })}>
-              Увійти
-            </Button>
-          ))}
+        {status === "loading" ? (
+          <></>
+        ) : status === "authenticated" ? (
+          <Button onClick={() => signOut({ callbackUrl: "/" })}>Вийти</Button>
+        ) : (
+          <Button onClick={() => signIn("google", { callbackUrl: "/" })}>
+            Увійти
+          </Button>
+        )}
       </nav>
     </header>
   );
