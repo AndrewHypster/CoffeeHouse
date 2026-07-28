@@ -38,14 +38,14 @@ const WritePoem = () => {
       console.log(err);
     }
 
-    const handleSubmit = async (text) => {
+    const handleSubmit = async () => {
       const res = await fetch("/api/db", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           author_id: authorId,
           title: title,
-          content: text,
+          content: `${text} ${author? `\n\n` + author : ''}`,
         }),
       });
 
