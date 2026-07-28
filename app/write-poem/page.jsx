@@ -80,6 +80,7 @@ const WritePoem = () => {
             name="authorId"
             placeholder="ID Автора в бд"
             value={session.user.id}
+            onChange={()=>{}}
             hidden
             required
           />
