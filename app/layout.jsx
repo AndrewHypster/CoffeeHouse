@@ -1,19 +1,9 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "../components/header";
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarInset,
-  SidebarContent,
-  SidebarHeader,
-  SidebarFooter,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
-import { HomeIcon, BookOpenIcon, PencilIcon } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
+import AllProviders from "@/components/allProviders";
+import { Toaster } from "@/components/ui/toast";
 
 // Налаштовуємо шрифт Inter
 const inter = Inter({
@@ -30,13 +20,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ua">
       <body className={`${inter.variable} font-sans antialiased flex`}>
-        <SidebarProvider>
+        <AllProviders>
           <AppSidebar />
+          <Toaster />
           <div className="wrapper">
             <Header />
             {children}
           </div>
-        </SidebarProvider>
+        </AllProviders>
       </body>
     </html>
   );

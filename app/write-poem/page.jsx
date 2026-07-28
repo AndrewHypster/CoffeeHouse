@@ -3,19 +3,24 @@
 import { Button } from "@/components/ui/button";
 import s from "./write-poem.module.css";
 import { Send } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 
 const WritePoem = () => {
   const sendForm = async (form) => {
+    const author = form.get("author");
+    const title = form.get("title");
     const text = form.get("text");
 
     try {
       const response = await fetch("/api/tg-bot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: `${title}\n\n${text}\n\n${author}` }),
       });
 
-      if (!response.ok) throw new Error("Помилка сервера");
+      if (!response.ok) {
+        throw new Error("Помилка сервера");
+      }
 
       const result = await response.json();
       console.log(result);
@@ -27,15 +32,25 @@ const WritePoem = () => {
       const res = await fetch("/api/db", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ author: 'author', title: 'title', content: text }),
+        body: JSON.stringify({
+          author: author,
+          title: title,
+          content: text,
+        }),
       });
 
       if (res.ok) {
-        // setAuthor("");
-        // setTitle("");
-        // setContent("");
-        // fetchPoems(); // оновлюємо список після додавання
-        alert('Успішно нідіслано в БД')
+        toast.add({
+          type: "success",
+          description: "Вірш успішно збережено!",
+        });
+      } else {
+        document.querySelector('form [name="text"]').value = text;
+        
+        toast.add({
+          type: "error",
+          description: "Вірш НЕ збережено!",
+        });
       }
     };
     handleSubmit(text);
@@ -44,6 +59,8 @@ const WritePoem = () => {
   return (
     <form className={s.form} action={sendForm}>
       <div className={s.textBox}>
+        <input type="text" name="author" placeholder="Автор ПІП" required />
+        <input type="text" name="title" placeholder="Заголовок" required />
         <textarea
           className={s.textArea}
           name="text"
