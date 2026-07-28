@@ -7,7 +7,7 @@ import { desc, asc, eq, ilike, and } from "drizzle-orm";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     // Параметри пагінації
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
     const limit = Math.min(50, parseInt(searchParams.get("limit") || "10"));
@@ -20,7 +20,10 @@ export async function GET(request: Request) {
     const conditions = [];
 
     if (author) {
-      conditions.push(eq(poems.author, author));
+      const authorId = Number(author);
+      if (!Number.isNaN(authorId)) {
+        conditions.push(eq(poems.authorId, authorId));
+      }
     }
 
     if (search) {
@@ -29,9 +32,16 @@ export async function GET(request: Request) {
 
     const result = await db.query.poems.findMany({
       where: conditions.length > 0 ? and(...conditions) : undefined,
-      orderBy: [desc(poems.createdAt), asc(poems.author)],
+      orderBy: [desc(poems.createdAt), asc(poems.authorId)],
       limit: limit,
       offset: offset,
+      with: {
+        author: {
+          columns: {
+            name: true, // витягуємо лише ім'я (абобери потрібні поля)
+          },
+        },
+      },
     });
 
     return NextResponse.json(result, { status: 200 });
@@ -48,11 +58,19 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { author, title, content } = body;
+    const { author_id = '0', title, content } = body;
 
-    if (!author || !title || !content) {
+    if (!title || !content) {
       return NextResponse.json(
         { error: "Заповни всі обов’язкові поля!" },
+        { status: 400 },
+      );
+    }
+
+    const authorId = Number(author_id);
+    if (Number.isNaN(authorId)) {
+      return NextResponse.json(
+        { error: "Невірний author_id" },
         { status: 400 },
       );
     }
@@ -60,7 +78,7 @@ export async function POST(request: Request) {
     const newPoem = await db
       .insert(poems)
       .values({
-        author,
+        authorId,
         title,
         content,
       })

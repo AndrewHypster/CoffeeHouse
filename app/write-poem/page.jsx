@@ -4,9 +4,19 @@ import { Button } from "@/components/ui/button";
 import s from "./write-poem.module.css";
 import { Send } from "lucide-react";
 import { toast } from "@/components/ui/toast";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import Loader from "@/components/loader";
 
 const WritePoem = () => {
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    console.log(status);
+  }, [session]);
+
   const sendForm = async (form) => {
+    const authorId = form.get("authorId");
     const author = form.get("author");
     const title = form.get("title");
     const text = form.get("text");
@@ -15,7 +25,7 @@ const WritePoem = () => {
       const response = await fetch("/api/tg-bot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: `${title}\n\n${text}\n\n${author}` }),
+        body: JSON.stringify({ message: `${title}\n\n${text}\n\nID: ${authorId} ${author}` }),
       });
 
       if (!response.ok) {
@@ -33,7 +43,7 @@ const WritePoem = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          author: author,
+          author_id: authorId,
           title: title,
           content: text,
         }),
@@ -46,7 +56,7 @@ const WritePoem = () => {
         });
       } else {
         document.querySelector('form [name="text"]').value = text;
-        
+
         toast.add({
           type: "error",
           description: "Вірш НЕ збережено!",
@@ -56,10 +66,27 @@ const WritePoem = () => {
     handleSubmit(text);
   };
 
+  if (status == "loading") return <Loader />;
+
   return (
     <form className={s.form} action={sendForm}>
       <div className={s.textBox}>
-        <input type="text" name="author" placeholder="Автор ПІП" required />
+        {/* unauthenticated    authenticated */}
+        {status == "unauthenticated" ? (
+          <input type="text" name="author" placeholder="Автор ПІП" required />
+        ) : status == "authenticated" ? (
+          <input
+            type="text"
+            name="authorId"
+            placeholder="ID Автора в бд"
+            value={session.user.id}
+            hidden
+            required
+          />
+        ) : (
+          <></>
+        )}
+
         <input type="text" name="title" placeholder="Заголовок" required />
         <textarea
           className={s.textArea}

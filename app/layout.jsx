@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "../components/header";
-import { AppSidebar } from "@/components/app-sidebar";
+import AppSidebarClient from "@/components/AppSidebarClient";
 import AllProviders from "@/components/allProviders";
 import { Toaster } from "@/components/ui/toast";
 
@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
     <html lang="ua">
       <body className={`${inter.variable} font-sans antialiased flex`}>
         <AllProviders>
-          <AppSidebar />
+          <AppSidebarClient />
           <Toaster />
           <div className="wrapper">
             <Header />

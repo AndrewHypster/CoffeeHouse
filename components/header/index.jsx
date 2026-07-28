@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import s from "./header.module.css";
+import { Button } from "../ui/button";
+import { signIn } from "next-auth/react";
 
 const Header = () => {
   return (
@@ -21,6 +23,7 @@ const Header = () => {
         <Link className={s.link} href="/write-poem">
           Написати вірш
         </Link>
+        <Button onClick={() => signIn("google", { callbackUrl: "/" })}>Увійти</Button>
       </nav>
     </header>
   );

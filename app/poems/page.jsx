@@ -10,7 +10,6 @@ const Poems = () => {
 
   useEffect(() => {
     async function fetchPoems() {
-      // Формуємо URL з параметрами пагінації та фільтрації
       const params = new URLSearchParams({
         page: page.toString(),
         limit: "10",
@@ -25,6 +24,7 @@ const Poems = () => {
 
       const data = await res.json();
       setPoems(data);
+      console.log(data)
     }
 
     fetchPoems();
@@ -54,7 +54,7 @@ const Poems = () => {
                 {poem.content}
               </p>
               <small className={s.poemInfo}>
-                <p className={s.poemAuthor}>{poem.author}</p>
+                {poem.author? <p className={s.poemAuthor}>{poem.author.name}</p> : <></>}
                 <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
               </small>
             </li>
@@ -66,7 +66,7 @@ const Poems = () => {
           }
 
           // Для всіх інших — елемент + роздільник
-          return [node, <div className={s.hr} key={'hr-'+poem.id}></div>];
+          return [node, <div className={s.hr} key={"hr-" + poem.id}></div>];
         })}
       </ul>
     </div>
