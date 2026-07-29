@@ -24,7 +24,7 @@ const Poems = () => {
 
       const data = await res.json();
       setPoems(data);
-      console.log(data)
+      console.log(data);
     }
 
     fetchPoems();
@@ -32,15 +32,8 @@ const Poems = () => {
 
   function formatDateTime(isoString) {
     const date = new Date(isoString);
-
-    return new Intl.DateTimeFormat("uk-UA", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false, // 24-годинний формат
-    }).format(date);
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(date.getUTCDate())}.${pad(date.getUTCMonth() + 1)}.${date.getUTCFullYear()}, ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}`;
   }
 
   return (
@@ -54,7 +47,11 @@ const Poems = () => {
                 {poem.content}
               </p>
               <small className={s.poemInfo}>
-                {poem.author? <p className={s.poemAuthor}>{poem.author.name}</p> : <></>}
+                {poem.author ? (
+                  <p className={s.poemAuthor}>{poem.author.name}</p>
+                ) : (
+                  <></>
+                )}
                 <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
               </small>
             </li>

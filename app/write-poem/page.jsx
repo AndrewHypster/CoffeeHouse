@@ -45,7 +45,7 @@ const WritePoem = () => {
         body: JSON.stringify({
           author_id: authorId,
           title: title,
-          content: `${text} ${author? `\n\n` + author : ''}`,
+          content: `${text} ${author.length != 0? `\n\n` + author : ''}`,
         }),
       });
 
@@ -73,7 +73,7 @@ const WritePoem = () => {
       <div className={s.textBox}>
         {/* unauthenticated    authenticated */}
         {status == "unauthenticated" ? (
-          <input type="text" name="author" placeholder="Автор ПІП" required />
+          <input type="text" name="author" placeholder="Автор (необов'язково)" />
         ) : status == "authenticated" ? (
           <input
             type="text"
