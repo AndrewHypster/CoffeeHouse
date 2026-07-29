@@ -3,8 +3,23 @@
   margin: auto;
   padding: 2rem;
   padding-bottom: 3rem;
-  gap: 3rem;
+  gap: 2rem;
   display: grid;
+}
+
+.filterInpts {
+  flex-wrap: wrap;
+  gap: 1rem;
+  display: flex;
+}
+
+.filterInpt {
+  width: 100%;
+  max-width: 250px;
+  box-sizing: border-box;
+  padding: .5rem .4rem;
+  border: 1px solid var(--input);
+  border-radius: .4rem;
 }
 
 .list {

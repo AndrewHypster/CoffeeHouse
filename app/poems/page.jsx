@@ -5,6 +5,15 @@ import s from "./poems.module.css";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/loader";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Poems = () => {
   const searchParams = useSearchParams();
@@ -15,32 +24,51 @@ const Poems = () => {
     parseInt(searchParams?.get("page") || "1"),
   );
   const [search, setSearch] = useState(() => searchParams?.get("search") || "");
+  const [author, setAuthor] = useState(() => searchParams?.get("author") || "");
+  const [authors, setAuthors] = useState(null);
   const cacheRef = useRef(new Map());
   const [isLoading, setIsLoading] = useState(false);
 
-  // keep local state in sync with URL params
+  // Синхронізація локального стейту з URL params
   useEffect(() => {
     const urlPage = parseInt(searchParams?.get("page") || "1");
     const urlSearch = searchParams?.get("search") || "";
+    const urlAuthor = searchParams?.get("author") || "";
+
     if (urlPage !== page) setPage(urlPage);
     if (urlSearch !== search) setSearch(urlSearch);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (urlAuthor !== author) setAuthor(urlAuthor);
   }, [searchParams]);
 
   useEffect(() => {
+    const getAuthors = async () => {
+      try {
+        const res = await fetch(`/api/db/users`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setAuthors(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    getAuthors();
+  }, []);
+
+  // Дебаунс та запит на сервер при зміні фільтрів або сторінки
+  useEffect(() => {
     let mounted = true;
 
-    async function fetchPoems() {
+    const timer = setTimeout(async () => {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: "10",
       });
 
       if (search) params.set("search", search);
+      if (author) params.set("author", author);
 
       const key = params.toString();
 
-      // serve from cache when available
       if (cacheRef.current.has(key)) {
         if (!mounted) return;
         setPoems(cacheRef.current.get(key));
@@ -50,7 +78,7 @@ const Poems = () => {
 
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/db?${key}`);
+        const res = await fetch(`/api/db/poems?${key}`);
         if (!res.ok) return;
         const data = await res.json();
         if (!mounted) return;
@@ -61,14 +89,22 @@ const Poems = () => {
       } finally {
         if (mounted) setIsLoading(false);
       }
-    }
-
-    fetchPoems();
+    }, 400);
 
     return () => {
       mounted = false;
+      clearTimeout(timer);
     };
-  }, [page, search]);
+  }, [page, search, author]);
+
+  // Оновлення URL при введенні тексту в інпути
+  const updateUrlParams = (newSearch, newAuthor, newPage) => {
+    const params = new URLSearchParams();
+    params.set("page", String(newPage));
+    if (newSearch) params.set("search", newSearch);
+    if (newAuthor) params.set("author", newAuthor);
+    router.push(`${window.location.pathname}?${params.toString()}`);
+  };
 
   function formatDateTime(isoString) {
     const date = new Date(isoString);
@@ -76,37 +112,100 @@ const Poems = () => {
     return `${pad(date.getUTCDate())}.${pad(date.getUTCMonth() + 1)}.${date.getUTCFullYear()}, ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}`;
   }
 
-  if (!poems || isLoading) return <Loader />;
+  if (!poems || (isLoading && !poems)) return <Loader />;
 
   return (
     <div className={s.page}>
+      <div className={s.filter}>
+        <b className={s.filterTitle}>Фільтрація</b>
+        <div className={s.filterInpts}>
+          <input
+            className={s.filterInpt}
+            type="text"
+            placeholder="Назва"
+            value={search}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearch(val);
+              setPage(1);
+              updateUrlParams(val, author, 1);
+            }}
+          />
+          {/* <input
+            className={s.filterInpt}
+            type="text"
+            placeholder="Автор"
+            value={author}
+            onChange={(e) => {
+              const val = e.target.value;
+              setAuthor(val);
+              setPage(1);
+              updateUrlParams(search, val, 1);
+            }}
+          /> */}
+          {authors && (
+            <Select
+              items={[
+                { label: "Select an author", value: null },
+                ...authors.map((author) => ({
+                  label: author.name,
+                  value: author.id,
+                })),
+              ]}
+              onValueChange={(value) => {
+                setAuthor(value)
+              }}
+            >
+              <SelectTrigger className="w-full max-w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Authors</SelectLabel>
+                  <SelectItem value={null}>
+                      Всі
+                    </SelectItem>
+                  {authors.map((item) => (
+                    <SelectItem key={item.id} value={item.name}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      </div>
+
       <ul className={s.list}>
-        {poems.flatMap((poem, index) => {
-          const node = (
-            <li className={s.poem} key={poem.id}>
-              <h2 className={s.poemTitle}>{poem.title}</h2>
-              <p className={s.poemText + " whitespace-pre-wrap"}>
-                {poem.content}
-              </p>
-              <small className={s.poemInfo}>
-                {poem.author ? (
-                  <p className={s.poemAuthor}>{poem.author.name}</p>
-                ) : (
-                  <></>
-                )}
-                <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
-              </small>
-            </li>
-          );
+        {poems.length === 0 ? (
+          <p>Нічого не знайдено</p>
+        ) : (
+          poems.flatMap((poem, index) => {
+            const node = (
+              <li className={s.poem} key={poem.id}>
+                <h2 className={s.poemTitle}>{poem.title}</h2>
+                <p className={s.poemText + " whitespace-pre-wrap"}>
+                  {poem.content}
+                </p>
+                <small className={s.poemInfo}>
+                  {poem.author ? (
+                    <p className={s.poemAuthor}>{poem.author.name}</p>
+                  ) : (
+                    <></>
+                  )}
+                  <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
+                </small>
+              </li>
+            );
 
-          // Якщо це останній елемент, повертаємо тільки сам елемент
-          if (index === poems.length - 1) {
-            return [node];
-          }
+            if (index === poems.length - 1) {
+              return [node];
+            }
 
-          // Для всіх інших — елемент + роздільник
-          return [node, <div className={s.hr} key={"hr-" + poem.id}></div>];
-        })}
+            return [node, <div className={s.hr} key={"hr-" + poem.id}></div>];
+          })
+        )}
       </ul>
 
       <div className={s.pagination}>
@@ -115,15 +214,11 @@ const Poems = () => {
           disabled={page <= 1}
           onClick={() => {
             const newPage = Math.max(1, page - 1);
-            const params = new URLSearchParams(searchParams?.toString() || "");
-            params.set("page", String(newPage));
-            if (search) params.set("search", search);
-            else params.delete("search");
-            router.push(`${window.location.pathname}?${params.toString()}`);
             setPage(newPage);
+            updateUrlParams(search, author, newPage);
           }}
         >
-          {'<'}
+          {"<"}
         </Button>
         <span>Сторінка {page}</span>
         <Button
@@ -131,15 +226,11 @@ const Poems = () => {
           disabled={poems.length < 10}
           onClick={() => {
             const newPage = page + 1;
-            const params = new URLSearchParams(searchParams?.toString() || "");
-            params.set("page", String(newPage));
-            if (search) params.set("search", search);
-            else params.delete("search");
-            router.push(`${window.location.pathname}?${params.toString()}`);
             setPage(newPage);
+            updateUrlParams(search, author, newPage);
           }}
         >
-          {'>'}
+          {">"}
         </Button>
       </div>
     </div>

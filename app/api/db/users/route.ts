@@ -1,0 +1,25 @@
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db/index";
+import { users } from "@/lib/db/schema";
+import { desc } from "drizzle-orm";
+
+// GET: Читання авторів
+export async function GET(request: Request) {
+  try {
+    const result = await db
+      .select({
+        id: users.id,
+        name: users.name,
+      })
+      .from(users)
+      .orderBy(users.id)
+
+    return NextResponse.json(result, { status: 200 });
+  } catch (error) {
+    console.error("DB GET ERROR", error);
+    return NextResponse.json(
+      { error: "Помилка при читанні авторів" },
+      { status: 500 },
+    );
+  }
+}

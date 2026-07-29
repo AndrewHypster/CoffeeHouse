@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
-import { poems } from "@/lib/db/schema";
+import { poems, users } from "@/lib/db/schema";
 import { desc, asc, eq, ilike, and } from "drizzle-orm";
 
 // GET: Читання всіх віршів (сортування за датою та автором)
@@ -8,41 +8,47 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    // Параметри пагінації
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
     const limit = Math.min(50, parseInt(searchParams.get("limit") || "10"));
     const offset = (page - 1) * limit;
 
-    // Параметри фільтрації
-    const author = searchParams.get("author");
+    const authorQuery = searchParams.get("author"); // може бути ім'ям або ID
     const search = searchParams.get("search");
 
     const conditions = [];
 
-    if (author) {
-      const authorId = Number(author);
-      if (!Number.isNaN(authorId)) {
-        conditions.push(eq(poems.authorId, authorId));
-      }
-    }
-
+    // Фільтрація за назвою вірша
     if (search) {
       conditions.push(ilike(poems.title, `%${search}%`));
     }
 
-    const result = await db.query.poems.findMany({
-      where: conditions.length > 0 ? and(...conditions) : undefined,
-      orderBy: [desc(poems.createdAt), asc(poems.authorId)],
-      limit: limit,
-      offset: offset,
-      with: {
+    // Фільтрація за автором (якщо передано текст або ID)
+    if (authorQuery) {
+      const authorId = Number(authorQuery);
+      if (!Number.isNaN(authorId)) {
+        conditions.push(eq(poems.authorId, authorId));
+      } else {
+        conditions.push(ilike(users.name, `%${authorQuery}%`));
+      }
+    }
+
+    // Використовуємо звичайний select з join замість db.query
+    const result = await db
+      .select({
+        id: poems.id,
+        title: poems.title,
+        content: poems.content,
+        createdAt: poems.createdAt,
         author: {
-          columns: {
-            name: true, // витягуємо лише ім'я (абобери потрібні поля)
-          },
+          name: users.name,
         },
-      },
-    });
+      })
+      .from(poems)
+      .leftJoin(users, eq(poems.authorId, users.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(poems.createdAt), asc(poems.authorId))
+      .limit(limit)
+      .offset(offset);
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {

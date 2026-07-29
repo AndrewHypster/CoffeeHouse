@@ -39,7 +39,7 @@ const WritePoem = () => {
     }
 
     const handleSubmit = async () => {
-      const res = await fetch("/api/db", {
+      const res = await fetch("/api/db/poems", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
