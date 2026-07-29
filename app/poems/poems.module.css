@@ -2,7 +2,9 @@
   width: fit-content;
   margin: auto;
   padding: 2rem;
-  padding-bottom: 6rem;
+  padding-bottom: 3rem;
+  gap: 3rem;
+  display: grid;
 }
 
 .list {
@@ -33,3 +35,8 @@
   width: 100%;
 }
 
+.pagination {
+  margin: 0 auto;
+  gap: 1rem;
+  display: flex;
+}
