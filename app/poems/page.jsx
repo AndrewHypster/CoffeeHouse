@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import s from "./poems.module.css";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/loader";
@@ -15,7 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const Poems = () => {
+// 1. Ввесь твій попередній код виносимо в окремий внутрішній компонент
+const PoemsContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -24,16 +25,15 @@ const Poems = () => {
     parseInt(searchParams?.get("page") || "1"),
   );
   const [search, setSearch] = useState(() => searchParams?.get("search") || "");
-  const [author, setAuthor] = useState(() => searchParams?.get("author") || "");
+  const [author, setAuthor] = useState(() => searchParams?.get("author") ?? false);
   const [authors, setAuthors] = useState(null);
   const cacheRef = useRef(new Map());
   const [isLoading, setIsLoading] = useState(false);
 
-  // Синхронізація локального стейту з URL params
   useEffect(() => {
     const urlPage = parseInt(searchParams?.get("page") || "1");
     const urlSearch = searchParams?.get("search") || "";
-    const urlAuthor = searchParams?.get("author") || "";
+    const urlAuthor = searchParams?.get("author") ?? false;
 
     if (urlPage !== page) setPage(urlPage);
     if (urlSearch !== search) setSearch(urlSearch);
@@ -54,7 +54,6 @@ const Poems = () => {
     getAuthors();
   }, []);
 
-  // Дебаунс та запит на сервер при зміні фільтрів або сторінки
   useEffect(() => {
     let mounted = true;
 
@@ -65,7 +64,9 @@ const Poems = () => {
       });
 
       if (search) params.set("search", search);
-      if (author) params.set("author", author);
+      if (author) {
+        params.set("author", author);
+      }
 
       const key = params.toString();
 
@@ -97,12 +98,13 @@ const Poems = () => {
     };
   }, [page, search, author]);
 
-  // Оновлення URL при введенні тексту в інпути
   const updateUrlParams = (newSearch, newAuthor, newPage) => {
     const params = new URLSearchParams();
     params.set("page", String(newPage));
     if (newSearch) params.set("search", newSearch);
-    if (newAuthor) params.set("author", newAuthor);
+    if (newAuthor) {
+      params.set("author", newAuthor);
+    }
     router.push(`${window.location.pathname}?${params.toString()}`);
   };
 
@@ -131,40 +133,23 @@ const Poems = () => {
               updateUrlParams(val, author, 1);
             }}
           />
-          {/* <input
-            className={s.filterInpt}
-            type="text"
-            placeholder="Автор"
-            value={author}
-            onChange={(e) => {
-              const val = e.target.value;
-              setAuthor(val);
-              setPage(1);
-              updateUrlParams(search, val, 1);
-            }}
-          /> */}
           {authors && (
             <Select
-              items={[
-                { label: "Select an author", value: null },
-                ...authors.map((author) => ({
-                  label: author.name,
-                  value: author.id,
-                })),
-              ]}
+              value={author || 'Всі'}
               onValueChange={(value) => {
-                setAuthor(value)
+
+                setAuthor(value);
+                setPage(1);
+                updateUrlParams(search, value, 1);
               }}
             >
               <SelectTrigger className="w-full max-w-48">
-                <SelectValue />
+                <SelectValue placeholder="Виберіть автора" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Authors</SelectLabel>
-                  <SelectItem value={null}>
-                      Всі
-                    </SelectItem>
+                  <SelectLabel>Автор</SelectLabel>
+                  <SelectItem value={false}>Всі</SelectItem>
                   {authors.map((item) => (
                     <SelectItem key={item.id} value={item.name}>
                       {item.name}
@@ -237,4 +222,11 @@ const Poems = () => {
   );
 };
 
-export default Poems;
+// 2. Головний експорт сторінки обгортає контент у Suspense із твоїм лоадером
+export default function PoemsPage() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <PoemsContent />
+    </Suspense>
+  );
+}
