@@ -1,28 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
 export default function LinkAccount({ authors, email }) {
   const [userId, setUserId] = useState("");
 
-  const selectedUser = authors.find((user) => String(user.id) === userId);
+  const selectedUser = authors.find(
+  (user) => String(user.id) === userId
+);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -40,12 +30,12 @@ export default function LinkAccount({ authors, email }) {
     }
 
     await signIn("google", {
-      callbackUrl: "/",
+      callbackUrl: "/poems",
     });
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
+    <div className="flex items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-2 text-center">
           <CardTitle>Підв'язка акаунта</CardTitle>
@@ -56,7 +46,10 @@ export default function LinkAccount({ authors, email }) {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={onSubmit} className="space-y-6">
+          <form
+            onSubmit={onSubmit}
+            className="space-y-6"
+          >
             <input type="hidden" name="mail" value={email} />
             <input type="hidden" name="userId" value={userId} />
 
@@ -64,21 +57,25 @@ export default function LinkAccount({ authors, email }) {
               <Label>Автор</Label>
 
               <Select value={userId} onValueChange={setUserId}>
-                <SelectTrigger>
-                  {selectedUser ? selectedUser.name : "Оберіть себе"}
-                </SelectTrigger>
+  <SelectTrigger>
+  {selectedUser ? selectedUser.name : "Оберіть себе"}
+</SelectTrigger>
 
-                <SelectContent>
-                  {authors.map((user) => (
-                    <SelectItem key={user.id} value={String(user.id)}>
-                      {user.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+  <SelectContent>
+    {authors.map((user) => (
+      <SelectItem key={user.id} value={String(user.id)}>
+        {user.name}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
             </div>
 
-            <Button type="submit" className="w-full" disabled={!userId}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!userId}
+            >
               Продовжити
             </Button>
           </form>

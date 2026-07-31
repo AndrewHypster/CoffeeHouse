@@ -83,6 +83,7 @@ const PoemsContent = () => {
         const data = await res.json();
         cacheRef.current.set(key, data);
         setPoems(data);
+        console.log(data)
       } catch (err) {
         console.error(err);
       }
@@ -102,9 +103,7 @@ const PoemsContent = () => {
   };
 
   function formatDateTime(isoString) {
-    const date = new Date(isoString);
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${pad(date.getUTCDate())}.${pad(date.getUTCMonth() + 1)}.${date.getUTCFullYear()}, ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}`;
+    return isoString.split("-").join(".");
   }
 
   if (!poems || (isLoading && !poems)) return <Loader />;

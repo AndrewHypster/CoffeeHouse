@@ -13,5 +13,5 @@ CREATE TABLE IF NOT EXISTS poems (
   author_id integer REFERENCES users(id) ON DELETE SET NULL,
   title text NOT NULL,
   content text NOT NULL,
-  created_at timestamp with time zone DEFAULT now() NOT NULL
+  created_at DATE DEFAULT now() NOT NULL
 );

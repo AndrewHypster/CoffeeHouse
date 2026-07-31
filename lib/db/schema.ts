@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, serial, text, timestamp, integer } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, integer, date } from 'drizzle-orm/pg-core';
 
 
 
@@ -17,7 +17,7 @@ export const poems = pgTable('poems', {
     .references(() => users.id, { onDelete: 'set null' }),
   title: text('title').notNull(),
   content: text('content').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: date('created_at').defaultNow().notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
