@@ -1,24 +1,26 @@
-import { BookOpen, Home, Pencil } from "lucide-react";
+import { BookOpen, Home, Pencil, User } from "lucide-react";
 
 export const NAV_CONFIG = [
   {
+    title: "Огляд",
     items: [
       {
         title: "Головна",
         url: "/",
         icon: Home,
+        roles: ['guest', "user"],
+      },
+      {
+        title: "Кабінет",
+        url: "/profile",
+        icon: User,
         roles: ["user"],
       },
-    ],
-  },
-  {
-    title: "Огляд",
-    items: [
       {
         title: "Вірші",
         url: "/poems",
         icon: BookOpen,
-        roles: ["user"],
+        roles: ['guest', "user"],
       },
       // {
       //   title: "Мої Вірші",
@@ -35,7 +37,7 @@ export const NAV_CONFIG = [
         title: "Вірш",
         url: "/write-poem",
         icon: Pencil,
-        roles: ["user"],
+        roles: ['guest', "user"],
       },
       // {
       //   title: "В скриню",

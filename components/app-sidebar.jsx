@@ -21,9 +21,16 @@ import {
 } from "./ui/dropdown-menu";
 import { Building2, ChevronsUpDown, LogOut, Plus, User } from "lucide-react";
 import { NAV_CONFIG } from '@/config/navigation'
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 export function AppSidebar() {
-  const userRole = 'user'
+  const { data:session } = useSession()
+  const userRole = session?.user.role || 'guest'
+
+  useEffect(() => {
+    console.log(session);
+  }, [session])
 
   return (
     <Sidebar collapsible="icon">

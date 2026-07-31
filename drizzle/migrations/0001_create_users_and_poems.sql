@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS users (
   id serial PRIMARY KEY,
   name text NOT NULL,
-  mail text NOT NULL UNIQUE,
+  mail text,
   role text NOT NULL DEFAULT 'user',
   created_at timestamp with time zone DEFAULT now() NOT NULL
 );

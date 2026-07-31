@@ -25,7 +25,9 @@ const PoemsContent = () => {
     parseInt(searchParams?.get("page") || "1"),
   );
   const [search, setSearch] = useState(() => searchParams?.get("search") || "");
-  const [author, setAuthor] = useState(() => searchParams?.get("author") ?? false);
+  const [author, setAuthor] = useState(
+    () => searchParams?.get("author") ?? false,
+  );
   const [authors, setAuthors] = useState(null);
   const cacheRef = useRef(new Map());
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +45,7 @@ const PoemsContent = () => {
   useEffect(() => {
     const getAuthors = async () => {
       try {
-        const res = await fetch(`/api/db/users`);
+        const res = await fetch(`/api/db/authors`);
         if (!res.ok) return;
         const data = await res.json();
         setAuthors(data);
@@ -55,9 +57,7 @@ const PoemsContent = () => {
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-
-    const timer = setTimeout(async () => {
+    const f = async () => {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: "10",
@@ -71,7 +71,6 @@ const PoemsContent = () => {
       const key = params.toString();
 
       if (cacheRef.current.has(key)) {
-        if (!mounted) return;
         setPoems(cacheRef.current.get(key));
         setIsLoading(false);
         return;
@@ -82,20 +81,14 @@ const PoemsContent = () => {
         const res = await fetch(`/api/db/poems?${key}`);
         if (!res.ok) return;
         const data = await res.json();
-        if (!mounted) return;
         cacheRef.current.set(key, data);
         setPoems(data);
       } catch (err) {
         console.error(err);
-      } finally {
-        if (mounted) setIsLoading(false);
       }
-    }, 400);
-
-    return () => {
-      mounted = false;
-      clearTimeout(timer);
     };
+
+    f();
   }, [page, search, author]);
 
   const updateUrlParams = (newSearch, newAuthor, newPage) => {
@@ -135,9 +128,8 @@ const PoemsContent = () => {
           />
           {authors && (
             <Select
-              value={author || 'Всі'}
+              value={author || "Всі"}
               onValueChange={(value) => {
-
                 setAuthor(value);
                 setPage(1);
                 updateUrlParams(search, value, 1);
