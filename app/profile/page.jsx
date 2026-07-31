@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { useSession } from "next-auth/react";
 
 const Profile = () => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
 
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
@@ -25,20 +25,20 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    await fetch("/api/db/user", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-      }),
-    });
+  const res = await fetch("/api/db/user", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  });
 
-    console.log(name);
+  if (!res.ok) return;
 
-    setIsEditing(false);
-  };
+  await update();
+
+  setIsEditing(false);
+};
 
   if (!session) return null;
 

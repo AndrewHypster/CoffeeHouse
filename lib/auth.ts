@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
       return `/link-account?email=${encodeURIComponent(user.email)}`;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user?.email) {
         const dbUser = await db.query.users.findFirst({
           where: eq(users.mail, user.email),
@@ -58,6 +58,17 @@ export const authOptions: NextAuthOptions = {
           token.id = dbUser.id;
           token.role = dbUser.role;
           token.name = dbUser.name;
+        }
+      }
+
+      if (trigger === "update") {
+        const dbUser = await db.query.users.findFirst({
+          where: eq(users.id, token.id as number),
+        });
+
+        if (dbUser) {
+          token.name = dbUser.name;
+          token.role = dbUser.role;
         }
       }
 
