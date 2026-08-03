@@ -30,7 +30,8 @@ const Header = () => {
         {status === "loading" ? (
           <></>
         ) : status === "authenticated" ? (
-          <Button onClick={() => signOut({ callbackUrl: "/" })}>Вийти</Button>
+          // <Button onClick={() => signOut({ callbackUrl: "/" })}>Вийти</Button>
+          <></>
         ) : (
           <Button onClick={() => signIn("google", { callbackUrl: "/" })}>
             Увійти

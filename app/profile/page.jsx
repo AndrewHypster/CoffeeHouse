@@ -47,7 +47,7 @@ const Profile = () => {
       <CardContent className="flex justify-between items-center p-0 w-fit">
         <div className="flex gap-5 flex-wrap justify-center">
           <Avatar className={s.userAvatar}>
-            <AvatarImage src={session.user.image ?? ""} />
+            <AvatarImage src={session.user.image} />
             <AvatarFallback>
               {session.user.name?.[0]}
             </AvatarFallback>
