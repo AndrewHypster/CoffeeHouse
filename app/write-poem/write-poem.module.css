@@ -14,6 +14,28 @@
   line-height: 1.2em;
 }
 
+.checkBtn {
+  position: relative;
+}
+
+.checkBtn::after {
+  content: "";
+  position: absolute;
+inset: 50%;
+  transform: translate(-50%, -50%);
+  width: 2em;
+  height: auto;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.active::after {
+  opacity: 1;
+}
+
 .inputs {
   width: 100%;
   overflow: hidden;

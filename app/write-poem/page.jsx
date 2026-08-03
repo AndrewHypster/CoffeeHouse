@@ -5,18 +5,19 @@ import s from "./write-poem.module.css";
 import { Send } from "lucide-react";
 import { toast } from "@/components/ui/toast";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Loader from "@/components/loader";
 
 const WritePoem = () => {
   const { data: session, status } = useSession();
+  const [checkBox, setCheckBox] = useState(false);
 
   useEffect(() => {
     console.log(status);
   }, [session]);
 
   const sendForm = async (form) => {
-    const authorId = form.get("authorId");
+    const authorId = checkBox? 0 : session?.user?.id;
     const author = form.get("author");
     const title = form.get("title");
     const text = form.get("text");
@@ -72,22 +73,33 @@ const WritePoem = () => {
     <form className={s.form} action={sendForm}>
       <div className={s.textBox}>
         <div className={s.inputs}>
-        {status == "unauthenticated" ? (
-          <input className={s.input} type="text" name="author" placeholder="Автор (необов'язково)" />
-        ) : status == "authenticated" ? (
-          <input
-          className={s.input}
-            type="text"
-            name="authorId"
-            placeholder="ID Автора в бд"
-            value={session.user.id}
-            onChange={()=>{}}
-            hidden
-            required
-          />
-        ) : (
-          <></>
-        )}
+
+        <div className="flex gap-4">
+          Анонімно?
+      <button
+        type="button"
+        onClick={() => setCheckBox(true)}
+        className={s.checkBtn + ` rounded-md text-[.7em] font-bold transition-all ${
+          checkBox
+            ? s.active + " text-green-800"
+            : "text-gray-600"
+        }`}
+      >
+        Так
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setCheckBox(false)}
+        className={s.checkBtn + ` rounded-md text-[.7em] font-bold transition-all ${
+          !checkBox
+            ? s.active + " text-red-800"
+            : "text-gray-600"
+        }`}
+      >
+        Ні
+      </button>
+    </div>
 
         <input className={s.input} type="text" name="title" placeholder="Заголовок" required /></div>
         <textarea
