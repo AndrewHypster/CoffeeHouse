@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, serial, text, timestamp, integer, date } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, integer, date } from 'drizzle-orm/pg-core';
 
 
 
@@ -8,7 +8,7 @@ export const users = pgTable('users', {
   name: text('name').notNull(),
   mail: text('mail'),
   role: text('role').default('user').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: date('created_at').defaultNow().notNull(),
 });
 
 export const poems = pgTable('poems', {

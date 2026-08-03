@@ -20,17 +20,18 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Building2, ChevronsUpDown, LogOut, Plus, User } from "lucide-react";
-import { NAV_CONFIG } from '@/config/navigation'
+import * as Icons from "lucide-react";
+import { NAV_CONFIG } from "@/config/navigation-data";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 export function AppSidebar() {
-  const { data:session } = useSession()
-  const userRole = session?.user.role || 'guest'
+  const { data: session } = useSession();
+  const userRole = session?.user.role || "guest";
 
   useEffect(() => {
     console.log(session);
-  }, [session])
+  }, [session]);
 
   return (
     <Sidebar collapsible="icon">
@@ -48,16 +49,19 @@ export function AppSidebar() {
             <SidebarGroup key={key}>
               <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
               <SidebarMenu>
-                {allowedItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {allowedItems.map((item) => {
+                  const IconComponent = Icons[item.icon] || Building2;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild tooltip={item.title}>
+                        <Link href={item.url}>
+                          <IconComponent />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroup>
           );

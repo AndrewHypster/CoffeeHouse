@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
   name text NOT NULL,
   mail text,
   role text NOT NULL DEFAULT 'user',
-  created_at timestamp with time zone DEFAULT now() NOT NULL
+  created_at DATE DEFAULT now() NOT NULL
 );
 
 -- Create poems table

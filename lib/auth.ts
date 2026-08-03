@@ -58,6 +58,9 @@ export const authOptions: NextAuthOptions = {
           token.id = dbUser.id;
           token.role = dbUser.role;
           token.name = dbUser.name;
+          token.email = dbUser.mail;
+        } else {
+          token.email = user.email;
         }
 
         if (user.image) {
@@ -73,6 +76,7 @@ export const authOptions: NextAuthOptions = {
         if (dbUser) {
           token.name = dbUser.name;
           token.role = dbUser.role;
+          token.email = dbUser.mail;
         }
 
         if (session?.user?.image) {
@@ -88,6 +92,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as number;
         session.user.role = token.role as string;
         session.user.name = token.name as string;
+        session.user.email = token.email as string;
         session.user.image = token.image as string;
       }
 

@@ -6,6 +6,15 @@ export default withAuth({
   },
 });
 
+// Next.js requires `matcher` to be a static literal for build-time analysis.
+// Provide the same static routes here as an explicit literal.
 export const config = {
-  matcher: ["/", "/poems", "/write-poem", "/profile"],
+  matcher: [
+    "/",
+    "/poems",
+    "/write-poem",
+    "/profile",
+    "/dashboard",
+    "/dashboard/:path*",
+  ],
 };

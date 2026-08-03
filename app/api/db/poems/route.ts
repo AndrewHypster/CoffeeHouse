@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
 import { poems, users } from "@/lib/db/schema";
-import { desc, asc, eq, ilike, and } from "drizzle-orm";
+import { desc, asc, eq, ilike, and, sql } from "drizzle-orm";
 
 // GET: Читання всіх віршів (сортування за датою та автором)
 export async function GET(request: Request) {
@@ -39,9 +39,8 @@ export async function GET(request: Request) {
         title: poems.title,
         content: poems.content,
         createdAt: poems.createdAt,
-        author: {
-          name: users.name,
-        },
+        authorId: poems.authorId,
+        author: users.name,
       })
       .from(poems)
       .leftJoin(users, eq(poems.authorId, users.id))
@@ -50,7 +49,12 @@ export async function GET(request: Request) {
       .limit(limit)
       .offset(offset);
 
-    return NextResponse.json(result, { status: 200 });
+    // total count for pagination
+    const countRes = await db.select({ count: sql`count(*)` }).from(poems);
+    const total = Number(countRes[0]?.count ?? 0);
+    const pages = Math.max(1, Math.ceil(total / limit));
+
+    return NextResponse.json({ items: result, total, pages }, { status: 200 });
   } catch (error) {
     console.error("DB GET ERROR", error);
     return NextResponse.json(
@@ -64,7 +68,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { author_id = '0', title, content } = body;
+    const { author_id = "0", title, content } = body;
 
     if (!title || !content) {
       return NextResponse.json(
@@ -98,6 +102,61 @@ export async function POST(request: Request) {
     console.error("DB POST ERROR", error);
     return NextResponse.json(
       { error: "Помилка при збереженні вірша" },
+      { status: 500 },
+    );
+  }
+}
+
+// PATCH: Оновлення вірша (title, content)
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, title, content } = body;
+    const authorId = body.authorId;
+
+    if (typeof id !== "number") {
+      return NextResponse.json(
+        { error: "Невірний ідентифікатор вірша" },
+        { status: 400 },
+      );
+    }
+
+    const data: Partial<typeof poems.$inferInsert> = {};
+    if (typeof title === "string") data.title = title.trim();
+    if (typeof content === "string") data.content = content.trim();
+    if (typeof authorId === "number") data.authorId = authorId;
+
+    if (Object.keys(data).length === 0) {
+      return NextResponse.json(
+        { error: "Немає даних для оновлення" },
+        { status: 400 },
+      );
+    }
+
+    const [updated] = await db
+      .update(poems)
+      .set(data)
+      .where(eq(poems.id, id))
+      .returning();
+
+    // attach author name
+    const row = await db
+      .select({
+        id: poems.id,
+        title: poems.title,
+        content: poems.content,
+        createdAt: poems.createdAt,
+        author: users.name,
+      })
+      .from(poems)
+      .leftJoin(users, eq(poems.authorId, users.id))
+      .where(eq(poems.id, id));
+
+    return NextResponse.json({ success: true, poem: row[0] });
+  } catch (error) {
+    console.error("DB PATCH ERROR", error);
+    return NextResponse.json(
+      { error: "Помилка при оновленні вірша" },
       { status: 500 },
     );
   }

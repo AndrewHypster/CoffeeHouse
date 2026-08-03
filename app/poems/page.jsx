@@ -21,6 +21,7 @@ const PoemsContent = () => {
   const router = useRouter();
 
   const [poems, setPoems] = useState(null);
+  const [pagesCount, setPagesCount] = useState(1);
   const [page, setPage] = useState(() =>
     parseInt(searchParams?.get("page") || "1"),
   );
@@ -71,7 +72,9 @@ const PoemsContent = () => {
       const key = params.toString();
 
       if (cacheRef.current.has(key)) {
-        setPoems(cacheRef.current.get(key));
+        const cached = cacheRef.current.get(key);
+        setPoems(cached.items ?? cached);
+        setPagesCount(cached.pages ?? 1);
         setIsLoading(false);
         return;
       }
@@ -82,8 +85,9 @@ const PoemsContent = () => {
         if (!res.ok) return;
         const data = await res.json();
         cacheRef.current.set(key, data);
-        setPoems(data);
-        console.log(data)
+        setPoems(data.items ?? data);
+        setPagesCount(data.pages ?? 1);
+        console.log(data);
       } catch (err) {
         console.error(err);
       }
@@ -166,10 +170,12 @@ const PoemsContent = () => {
                 </p>
                 <small className={s.poemInfo}>
                   {poem.author ? (
-                    <p className={s.poemAuthor}>{poem.author.name}</p>
-                  ) : (
-                    <></>
-                  )}
+                    <p className={s.poemAuthor}>
+                      {typeof poem.author === "string"
+                        ? poem.author
+                        : poem.author?.name}
+                    </p>
+                  ) : null}
                   <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
                 </small>
               </li>
