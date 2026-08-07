@@ -93,7 +93,7 @@ export default function PoemsTableClient({
     {
       header: "ID",
       key: "id",
-      className: "max-w-[20px] text-slate-300",
+      className: "w-[20px] text-slate-300",
       type: "text",
     },
     {
@@ -113,7 +113,7 @@ export default function PoemsTableClient({
     {
       header: "Автор",
       key: "authorId",
-      className: "max-w-[45px] text-slate-300",
+      className: "text-slate-300",
       type: "text",
       editable: true,
       options: usersOptions,
