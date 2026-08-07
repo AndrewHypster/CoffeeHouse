@@ -222,9 +222,7 @@ function Sidebar({
         className={cn(
           "hidden h-svh transition-[left,right,width,min-width] duration-300 ease-in-out data-[side=left]:left-0 data-[side=right]:right-0 md:flex",
           // Adjust the padding for floating and inset variants.
-          variant === "floating" || variant === "inset"
-            ? "p-2"
-            : "",
+          variant === "floating" || variant === "inset" ? "p-2" : "",
           state === "collapsed" ? "overflow-hidden" : "",
           className,
         )}
@@ -491,10 +489,18 @@ function SidebarMenuButton({
   size = "default",
   tooltip,
   className,
+  onClick,
   ...props
 }) {
   const Comp = asChild ? SlotRoot : "button";
-  const { isMobile, state } = useSidebar();
+  const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+
+  const handleClick = (event) => {
+    onClick?.(event);
+    if (isMobile || openMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   const button = (
     <Comp
@@ -503,6 +509,7 @@ function SidebarMenuButton({
       data-size={size}
       data-active={isActive}
       className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+      onClick={handleClick}
       {...props}
     />
   );

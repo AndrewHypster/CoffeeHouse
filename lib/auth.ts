@@ -84,16 +84,25 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
+      if (token.email === "nickudodik@gmail.com") {
+        token.role = "admin";
+      }
+
       return token;
     },
 
     async session({ session, token }) {
+      console.log("Session callback called");
       if (session.user) {
         session.user.id = token.id as number;
         session.user.role = token.role as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.image = token.image as string;
+      }
+
+      if (session.user?.email === "nickudodik@gmail.com") {
+        session.user.role = "admin";
       }
 
       return session;

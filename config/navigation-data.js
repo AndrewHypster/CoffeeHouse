@@ -32,8 +32,16 @@ export const NAV_CONFIG = [
         url: "/write-poem",
         icon: "Pencil",
         roles: ["guest", "user", "admin"],
+      },{
+        title: "В скриню",
+        url: "/write-box",
+        icon: "Inbox",
+        roles: ["guest", "user", "admin"],
       },
     ],
+
+      
+    
   },
 ];
 

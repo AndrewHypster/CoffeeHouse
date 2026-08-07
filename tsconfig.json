@@ -30,6 +30,6 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-, "components/app-sidebar.jsx"  ],
+, "components/app-sidebar.jsx", "app/api/db/box/route.ts"  ],
   "exclude": ["node_modules"]
 }

@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import {
@@ -19,7 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Building2, ChevronsUpDown, LogOut, Plus, User } from "lucide-react";
 import * as Icons from "lucide-react";
 import { NAV_CONFIG } from "@/config/navigation-data";
 import { useSession } from "next-auth/react";
@@ -28,6 +28,7 @@ import { useEffect } from "react";
 export function AppSidebar() {
   const { data: session } = useSession();
   const userRole = session?.user.role || "guest";
+  const { setOpenMobile } = useSidebar();
 
   useEffect(() => {
     console.log(session);
@@ -54,7 +55,10 @@ export function AppSidebar() {
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild tooltip={item.title}>
-                        <Link href={item.url}>
+                        <Link
+                          href={item.url}
+                          onClick={() => setOpenMobile(false)}
+                        >
                           <IconComponent />
                           <span>{item.title}</span>
                         </Link>

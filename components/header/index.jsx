@@ -5,10 +5,11 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import s from "./header.module.css";
 import { Button } from "../ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 const Header = () => {
   const { status } = useSession();
-
+  
   return (
     <header className={s.header}>
       <div className="flex gap-2">
@@ -30,8 +31,7 @@ const Header = () => {
         {status === "loading" ? (
           <></>
         ) : status === "authenticated" ? (
-          // <Button onClick={() => signOut({ callbackUrl: "/" })}>Вийти</Button>
-          <></>
+          <Button onClick={() => signOut({ callbackUrl: "/" })}>Вийти</Button>
         ) : (
           <Button onClick={() => signIn("google", { callbackUrl: "/" })}>
             Увійти

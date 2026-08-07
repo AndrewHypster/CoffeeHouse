@@ -20,6 +20,12 @@ export const poems = pgTable('poems', {
   createdAt: date('created_at').defaultNow().notNull(),
 });
 
+export const box = pgTable('box', {
+  id: serial('id').primaryKey(),
+  text: text('Текст'),
+  date: date('Дата').notNull(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   poems: many(poems),
 }));

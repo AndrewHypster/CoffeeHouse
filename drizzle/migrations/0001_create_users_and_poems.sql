@@ -15,3 +15,9 @@ CREATE TABLE IF NOT EXISTS poems (
   content text NOT NULL,
   created_at DATE DEFAULT now() NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS box (
+  id serial PRIMARY KEY,
+  Текст text,
+  Дата date NOT NULL
+);
