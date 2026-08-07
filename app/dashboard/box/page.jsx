@@ -5,7 +5,8 @@ import BoxTableClient from "./BoxTableClient";
 import s from "./box.module.css";
 
 export default async function Page({ searchParams }) {
-  const page = Math.max(1, Number(searchParams?.page) || 1);
+  const params = await searchParams;
+  const page = Math.max(1, Number(params?.page) || 1);
   const limit = 10;
   const offset = (page - 1) * limit;
 
