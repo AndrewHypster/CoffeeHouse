@@ -49,7 +49,7 @@ export async function POST(request) {
       .insert(box)
       .values({
         text,
-        date: new Date(),
+        date: new Date().toISOString().slice(0, 10),
       })
       .returning();
 
