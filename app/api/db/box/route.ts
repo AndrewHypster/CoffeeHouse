@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
 import { box } from "@/lib/db/schema";
-import { sql, desc } from "drizzle-orm";
+import { sql, desc, eq, inArray } from "drizzle-orm";
 
 export async function GET(request: Request) {
   try {
@@ -61,6 +61,31 @@ export async function POST(request) {
     console.error("BOX POST ERROR", error);
     return NextResponse.json(
       { error: "Помилка при збереженні повідомлення" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json();
+    const ids = Array.isArray(body?.ids) ? body.ids : [body?.id];
+    const validIds = ids.filter((id) => typeof id === "number");
+
+    if (validIds.length === 0) {
+      return NextResponse.json(
+        { error: "Потрібно вказати ідентифікатори для видалення" },
+        { status: 400 },
+      );
+    }
+
+    await db.delete(box).where(inArray(box.id, validIds));
+
+    return NextResponse.json({ success: true, deleted: validIds.length });
+  } catch (error) {
+    console.error("BOX DELETE ERROR", error);
+    return NextResponse.json(
+      { error: "Помилка при видаленні повідомлень" },
       { status: 500 },
     );
   }

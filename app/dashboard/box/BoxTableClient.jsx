@@ -95,6 +95,15 @@ export default function BoxTableClient({
             isNextDisabled: pagination.currentPage >= pagination.pages,
             onPageChange: (p) => fetchPage(p),
           }}
+          onDelete={async (ids) => {
+            const res = await fetch("/api/db/box", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ids }),
+            });
+            if (!res.ok) return;
+            await fetchPage(pagination.currentPage);
+          }}
         />
       </div>
 

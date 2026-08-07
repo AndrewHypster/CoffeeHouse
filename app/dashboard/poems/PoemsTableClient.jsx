@@ -96,9 +96,13 @@ export default function PoemsTableClient({
       className: "max-w-[20px] text-slate-300",
       type: "text",
     },
-    { header: "Назва", key: "title",
+    {
+      header: "Назва",
+      key: "title",
       className: "w-[50px] text-slate-300",
-       type: "text", editable: true },
+      type: "text",
+      editable: true,
+    },
     {
       header: "Текст",
       key: "content",
@@ -145,6 +149,15 @@ export default function PoemsTableClient({
           data={poems}
           columns={columns}
           onChange={handleChange}
+          onDelete={async (ids) => {
+            const res = await fetch("/api/db/poems", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ids }),
+            });
+            if (!res.ok) return;
+            await fetchPage(pagination.currentPage);
+          }}
           pagination={{
             pages: pagination.pages,
             currentPage: pagination.currentPage,

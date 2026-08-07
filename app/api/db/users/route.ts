@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 export async function PATCH(request: Request) {
   try {
@@ -63,6 +63,29 @@ export async function GET() {
     console.error("USERS GET ERROR", error);
     return NextResponse.json(
       { error: "Помилка при читанні користувачів" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json();
+    const ids = Array.isArray(body?.ids) ? body.ids : [body?.id];
+    const validIds = ids.filter((id) => typeof id === "number");
+
+    if (validIds.length === 0) {
+      return NextResponse.json(
+        { error: "Потрібно вказати ідентифікатори для видалення" },
+        { status: 400 },
+      );
+    }
+
+    await db.delete(users).where(inArray(users.id, validIds));
+  } catch (error) {
+    console.error("USERS DELETE ERROR", error);
+    return NextResponse.json(
+      { error: "Помилка при видаленні користувачів" },
       { status: 500 },
     );
   }

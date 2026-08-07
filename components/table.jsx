@@ -78,107 +78,142 @@ const BadgeDotCell = ({ value, config, colKey, onClick }) => {
   );
 };
 
-const TableRowMemo = React.memo(({ columns, item, openModal }) => (
-  <TableRow>
-    {columns.map((col, i) => {
-      const value = item[col.key];
-      const editable = col.editable;
+const TableRowMemo = React.memo(
+  ({ columns, item, openModal, onOpenDelete }) => (
+    <TableRow>
+      {columns.map((col, i) => {
+        const value = item[col.key];
+        const editable = col.editable;
 
-      const handleOpenModal = () => {
-        if (!editable) return;
+        if (col.key === "__delete") {
+          return (
+            <TableCell key={i} className={cn("w-10 px-3 text-center")}>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onOpenDelete(item);
+                }}
+                aria-label="Видалити рядок"
+                className="inline-flex h-8 w-8 items-center justify-center text-destructive transition hover:bg-destructive/10 p-0"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#f4b8b8"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                </svg>
+              </button>
+            </TableCell>
+          );
+        }
 
-        openModal({
-          id: item.id,
-          title: col.header,
-          colKey: col.key,
-          currentValue: value,
-          username: item.name || `${item.firstName} ${item.lastName}`,
-          options: col.options,
-          type: col.type,
-        });
-      };
+        const handleOpenModal = () => {
+          if (!editable) return;
 
-      return (
-        <TableCell
-          className={cn(
-            col.className,
-            editable
-              ? "cursor-pointer transition-colors hover:bg-[var(--table-row-hover)]"
-              : "",
-          )}
-          key={i}
-          onClick={handleOpenModal}
-        >
-          {(() => {
-            if (col.render) return col.render(item);
+          openModal({
+            id: item.id,
+            title: col.header,
+            colKey: col.key,
+            currentValue: value,
+            username: item.name || `${item.firstName} ${item.lastName}`,
+            options: col.options,
+            type: col.type,
+          });
+        };
 
-            switch (col.type) {
-              case "badge-icon":
-                return (
-                  <BadgeIconCell
-                    value={item}
-                    config={col.config}
-                    colKey={col.key}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      openModal({
-                        id: item.id,
-                        title: col.header,
-                        colKey: col.key,
-                        currentValue: value,
-                        username:
-                          item.name || `${item.firstName} ${item.lastName}`,
-                        options: Object.entries(col.config || {}).map(
-                          ([key, info]) => ({
-                            value: key,
-                            label: info.label,
-                          }),
-                        ),
-                        type: col.type,
-                      });
-                    }}
-                  />
-                );
+        return (
+          <TableCell
+            className={cn(
+              col.className,
+              editable
+                ? "cursor-pointer transition-colors hover:bg-[var(--table-row-hover)]"
+                : "",
+            )}
+            key={i}
+            onClick={handleOpenModal}
+          >
+            {(() => {
+              if (col.render) return col.render(item);
 
-              case "text":
-                return <TextCell value={value} />;
+              switch (col.type) {
+                case "badge-icon":
+                  return (
+                    <BadgeIconCell
+                      value={item}
+                      config={col.config}
+                      colKey={col.key}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        openModal({
+                          id: item.id,
+                          title: col.header,
+                          colKey: col.key,
+                          currentValue: value,
+                          username:
+                            item.name || `${item.firstName} ${item.lastName}`,
+                          options: Object.entries(col.config || {}).map(
+                            ([key, info]) => ({
+                              value: key,
+                              label: info.label,
+                            }),
+                          ),
+                          type: col.type,
+                        });
+                      }}
+                    />
+                  );
 
-              case "badge-dot":
-                return (
-                  <BadgeDotCell
-                    value={item}
-                    config={col.config}
-                    colKey={col.key}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      openModal({
-                        id: item.id,
-                        title: col.header,
-                        colKey: col.key,
-                        currentValue: value,
-                        username:
-                          item.name || `${item.firstName} ${item.lastName}`,
-                        options: Object.entries(col.config || {}).map(
-                          ([key, info]) => ({
-                            value: key,
-                            label: info.label,
-                          }),
-                        ),
-                        type: col.type,
-                      });
-                    }}
-                  />
-                );
+                case "text":
+                  return <TextCell value={value} />;
 
-              default:
-                return <TextCell value={value} />;
-            }
-          })()}
-        </TableCell>
-      );
-    })}
-  </TableRow>
-));
+                case "badge-dot":
+                  return (
+                    <BadgeDotCell
+                      value={item}
+                      config={col.config}
+                      colKey={col.key}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        openModal({
+                          id: item.id,
+                          title: col.header,
+                          colKey: col.key,
+                          currentValue: value,
+                          username:
+                            item.name || `${item.firstName} ${item.lastName}`,
+                          options: Object.entries(col.config || {}).map(
+                            ([key, info]) => ({
+                              value: key,
+                              label: info.label,
+                            }),
+                          ),
+                          type: col.type,
+                        });
+                      }}
+                    />
+                  );
+
+                default:
+                  return <TextCell value={value} />;
+              }
+            })()}
+          </TableCell>
+        );
+      })}
+    </TableRow>
+  ),
+);
 
 export function UniversalTable({
   data,
@@ -186,8 +221,10 @@ export function UniversalTable({
   onChange,
   filtering,
   pagination,
+  onDelete,
 }) {
   const [modal, setModal] = useState(null);
+  const [deleteItem, setDeleteItem] = useState(null);
 
   const openModal = ({
     id,
@@ -200,12 +237,32 @@ export function UniversalTable({
     setModal({ id, title, colKey, username, currentValue, options });
   };
 
+  const openDeleteConfirmation = (item) => {
+    setDeleteItem(item);
+  };
+
+  const handleDelete = async () => {
+    if (!onDelete || !deleteItem) return;
+    await onDelete([deleteItem.id]);
+    setDeleteItem(null);
+  };
+
+  const columnsWithDelete = [
+    {
+      header: null,
+      key: "__delete",
+      className: "w-10",
+      render: () => null,
+    },
+    ...columns,
+  ];
+
   return (
     <>
       <Table>
         <TableHeader>
           <TableRow>
-            {columns.map((col, i) => (
+            {columnsWithDelete.map((col, i) => (
               <TableHead key={i} className={col.className}>
                 {col.header}
               </TableHead>
@@ -213,12 +270,13 @@ export function UniversalTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.map((item, key) => (
+          {data?.map((item) => (
             <TableRowMemo
               key={item.id}
-              columns={columns}
+              columns={columnsWithDelete}
               item={item}
               openModal={openModal}
+              onOpenDelete={openDeleteConfirmation}
             />
           ))}
         </TableBody>
@@ -226,7 +284,7 @@ export function UniversalTable({
 
       {/* ПАНЕЛЬ ПАГІНАЦІЇ */}
       {pagination && (
-        <div className="flex items-center justify-center rounded-b-xl border-t  p-4 shadow-sm border-white/[0.08] bg-white/[0.04] backdrop-blur-md">
+        <div className="flex items-center justify-center p-4 bg-foreground">
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Стрілка Назад */}
             <Button
@@ -407,6 +465,34 @@ export function UniversalTable({
                 }}
               >
                 Зберегти зміни
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {deleteItem && (
+        <Dialog open={!!deleteItem} onOpenChange={() => setDeleteItem(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Підтвердьте видалення</DialogTitle>
+              <DialogDescription>
+                Ви видаляєте {deleteItem.title ?? "рядок"} автора{" "}
+                {deleteItem.author || deleteItem.name || "—"}.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="py-4 text-sm text-muted-foreground">
+              Це дію складно скасувати. Будь ласка, підтвердіть, що ви хочете
+              видалити цей запис.
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteItem(null)}>
+                Скасувати
+              </Button>
+              <Button variant="destructive" onClick={handleDelete}>
+                Видалити
               </Button>
             </DialogFooter>
           </DialogContent>

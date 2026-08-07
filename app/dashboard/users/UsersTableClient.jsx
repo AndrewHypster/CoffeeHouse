@@ -112,6 +112,15 @@ export default function UsersTableClient({ users: initialUsers }) {
           data={users}
           columns={columns}
           onChange={handleChange}
+          onDelete={async (ids) => {
+            const res = await fetch("/api/db/users", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ids }),
+            });
+            if (!res.ok) return;
+            setUsers((prev) => prev.filter((user) => !ids.includes(user.id)));
+          }}
         />
       </div>
     </div>

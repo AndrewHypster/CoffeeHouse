@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
 import { poems, users } from "@/lib/db/schema";
-import { desc, asc, eq, ilike, and, sql } from "drizzle-orm";
+import { desc, asc, eq, ilike, and, sql, inArray } from "drizzle-orm";
 
 // GET: Читання всіх віршів (сортування за датою та автором)
 export async function GET(request: Request) {
@@ -157,6 +157,31 @@ export async function PATCH(request: Request) {
     console.error("DB PATCH ERROR", error);
     return NextResponse.json(
       { error: "Помилка при оновленні вірша" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json();
+    const ids = Array.isArray(body?.ids) ? body.ids : [body?.id];
+    const validIds = ids.filter((id) => typeof id === "number");
+
+    if (validIds.length === 0) {
+      return NextResponse.json(
+        { error: "Потрібно вказати ідентифікатори для видалення" },
+        { status: 400 },
+      );
+    }
+
+    await db.delete(poems).where(inArray(poems.id, validIds));
+
+    return NextResponse.json({ success: true, deleted: validIds.length });
+  } catch (error) {
+    console.error("POEMS DELETE ERROR", error);
+    return NextResponse.json(
+      { error: "Помилка при видаленні віршів" },
       { status: 500 },
     );
   }
