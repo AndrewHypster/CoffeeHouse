@@ -161,7 +161,9 @@ const Dashboard = async () => {
                 <tbody>
                   {boxPreview.map((item) => (
                     <tr key={item.id} className={s.previewRow}>
-                      <td className={s.boxText}>{item.text}</td>
+                      <td>
+                        <span className={s.boxText}>{item.text}</span>
+                      </td>
                       <td>{item.date?.toString?.() || "—"}</td>
                     </tr>
                   ))}

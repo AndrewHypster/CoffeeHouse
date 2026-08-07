@@ -50,3 +50,17 @@
 .tableWrapper {
   margin-top: 1.25rem;
 }
+
+.textPreview {
+  display: inline-block;
+  max-width: 14rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+}

@@ -3,6 +3,15 @@
 import { useState } from "react";
 import { UniversalTable } from "@/components/table";
 import s from "./box.module.css";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function BoxTableClient({
   boxItems: initialBoxItems,
@@ -10,6 +19,7 @@ export default function BoxTableClient({
 }) {
   const [items, setItems] = useState(initialBoxItems || []);
   const [status, setStatus] = useState("");
+  const [selectedMessage, setSelectedMessage] = useState(null);
   const [pagination, setPagination] = useState({
     pages: initialPagination?.pages || 1,
     currentPage: initialPagination?.currentPage || 1,
@@ -39,7 +49,20 @@ export default function BoxTableClient({
       className: "max-w-[20px] text-slate-300",
       type: "text",
     },
-    { header: "Повідомлення", key: "text", type: "textarea" },
+    {
+      header: "Повідомлення",
+      key: "text",
+      className: "max-w-[200px] text-slate-300",
+      render: (item) => (
+        <button
+          type="button"
+          className={s.textPreview}
+          onClick={() => setSelectedMessage(item.text)}
+        >
+          {item.text}
+        </button>
+      ),
+    },
     { header: "Дата", key: "date", type: "text" },
   ];
 
@@ -74,6 +97,30 @@ export default function BoxTableClient({
           }}
         />
       </div>
+
+      <Dialog
+        open={!!selectedMessage}
+        onOpenChange={() => setSelectedMessage(null)}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Повне повідомлення</DialogTitle>
+            <DialogDescription>
+              Натисніть закрити або поза вікном, щоб повернутися назад.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="max-h-[70vh] overflow-auto rounded-lg border border-border bg-background p-4 text-sm text-foreground">
+            {selectedMessage}
+          </div>
+
+          <DialogFooter>
+            <DialogClose className="rounded-md bg-slate-900 px-4 py-2 text-sm text-white hover:bg-slate-800">
+              Закрити
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

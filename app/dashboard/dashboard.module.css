@@ -108,6 +108,15 @@
   font-weight: 700;
 }
 
+.boxText {
+  display: inline-block;
+  max-width: 14rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .previewRow:hover {
   background: rgba(99, 102, 241, 0.08);
 }
