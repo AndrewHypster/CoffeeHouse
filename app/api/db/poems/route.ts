@@ -46,6 +46,7 @@ export async function GET(request: Request) {
         createdAt: poems.createdAt,
         authorId: poems.authorId,
         author: users.name,
+        author_id: users.id,
         
         likesCount: sql<number>`
       (

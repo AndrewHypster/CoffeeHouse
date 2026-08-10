@@ -40,8 +40,16 @@
 }
 
 .poemInfo {
+  align-items: baseline;
   gap: 1rem;
   display: flex;
+}
+
+.poemAuthor {
+  font-size: 1.3em;
+  font-weight: 500;
+  color: #0a7ebc;
+  text-decoration: underline;
 }
 
 .hr {

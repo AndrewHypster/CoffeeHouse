@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import LikeButton from "@/components/like-btn";
+import Link from "next/link";
 
 // 1. Ввесь твій попередній код виносимо в окремий внутрішній компонент
 const PoemsContent = () => {
@@ -173,11 +174,11 @@ const PoemsContent = () => {
 
                 <small className={s.poemInfo}>
                   {poem.author ? (
-                    <p className={s.poemAuthor}>
-                      {typeof poem.author === "string"
-                        ? poem.author
-                        : poem.author?.name}
-                    </p>
+                    <Link href={`/profile/${poem.author_id}`}>
+                      <p className={s.poemAuthor}>
+                        {typeof poem.author === "string" && poem.author}
+                      </p>
+                    </Link>
                   ) : null}
 
                   <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
