@@ -81,10 +81,10 @@ const Profile = () => {
   if (!session) return null;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto w-full max-w-4xl min-w-0 space-y-6 px-3 sm:px-4">
       {/* PROFILE */}
-      <Card>
-        <CardContent className="flex items-center gap-6 p-6">
+      <Card className="w-full min-w-0">
+        <CardContent className="flex min-w-0 flex-col items-center gap-4 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
           <Avatar className="h-24 w-24">
             <AvatarImage src={session.user.image || ""} />
 
@@ -122,9 +122,9 @@ const Profile = () => {
       </Card>
 
       {/* STATS */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid w-full grid-cols-2 gap-3 sm:gap-4">
         <Card>
-          <CardContent className="flex items-center justify-center gap-3 p-5">
+          <CardContent className="flex items-center justify-center gap-2 p-4 sm:gap-3 sm:p-5">
             <FileText size={22} />
 
             <div>
@@ -189,29 +189,33 @@ const Profile = () => {
       ) : (
         <div className="space-y-4">
           {poems.map((poem) => (
-            <Card key={poem.id}>
-              <CardContent className="p-5">
-                <h2 className="text-xl font-semibold">{poem.title}</h2>
+            <Card key={poem.id} className="w-full min-w-0 overflow-hidden">
+              <CardContent className="min-w-0 p-4 sm:p-5">
+                <h2 className="break-words text-xl font-semibold">
+                  {poem.title}
+                </h2>
 
-                <p className="mt-3 whitespace-pre-wrap text-muted-foreground">
+                <p className="mt-3 whitespace-pre-wrap break-words text-muted-foreground">
                   {poem.content}
                 </p>
 
-                <div className="mt-4 flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
+                <div className="mt-4 flex min-w-0 items-center justify-between gap-3">
+                  <p className="min-w-0 truncate text-sm text-muted-foreground">
                     {poem.author?.name}
                   </p>
 
                   <LikeButton
-  poemId={poem.id}
-  initialLiked={poem.liked}
-  initialCount={Number(poem.likesCount)}
-  onLikeChange={(liked) => {
-    if (tab === "liked" && !liked) {
-      setPoems((prev) => prev.filter((item) => item.id !== poem.id));
-    }
-  }}
-/>
+                    poemId={poem.id}
+                    initialLiked={poem.liked}
+                    initialCount={Number(poem.likesCount)}
+                    onLikeChange={(liked) => {
+                      if (tab === "liked" && !liked) {
+                        setPoems((prev) =>
+                          prev.filter((item) => item.id !== poem.id),
+                        );
+                      }
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>
