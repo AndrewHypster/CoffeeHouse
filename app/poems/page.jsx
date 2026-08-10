@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import LikeButton from "@/components/like-btn";
 
 // 1. Ввесь твій попередній код виносимо в окремий внутрішній компонент
 const PoemsContent = () => {
@@ -165,9 +166,11 @@ const PoemsContent = () => {
             const node = (
               <li className={s.poem} key={poem.id}>
                 <h2 className={s.poemTitle}>{poem.title}</h2>
+
                 <p className={s.poemText + " whitespace-pre-wrap"}>
                   {poem.content}
                 </p>
+
                 <small className={s.poemInfo}>
                   {poem.author ? (
                     <p className={s.poemAuthor}>
@@ -176,8 +179,15 @@ const PoemsContent = () => {
                         : poem.author?.name}
                     </p>
                   ) : null}
+
                   <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
                 </small>
+
+                <LikeButton
+                  poemId={poem.id}
+                  initialLiked={poem.liked}
+                  initialCount={Number(poem.likesCount)}
+                />
               </li>
             );
 

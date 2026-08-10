@@ -21,3 +21,12 @@ CREATE TABLE IF NOT EXISTS box (
   Текст text,
   Дата date NOT NULL
 );
+
+-- Create likes table
+CREATE TABLE IF NOT EXISTS likes (
+  id serial PRIMARY KEY,
+  user_id integer NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  poem_id integer NOT NULL REFERENCES poems(id) ON DELETE CASCADE,
+
+  CONSTRAINT user_poem_unique UNIQUE (user_id, poem_id)
+);

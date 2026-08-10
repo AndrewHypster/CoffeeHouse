@@ -1,6 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, serial, text, integer, date } from 'drizzle-orm/pg-core';
-
+import { pgTable, serial, text, integer, date, unique, } from 'drizzle-orm/pg-core';
 
 
 export const users = pgTable('users', {
@@ -28,11 +27,43 @@ export const box = pgTable('box', {
 
 export const usersRelations = relations(users, ({ many }) => ({
   poems: many(poems),
+  likes: many(likes),
 }));
 
-export const poemsRelations = relations(poems, ({ one }) => ({
+export const poemsRelations = relations(poems, ({ one, many }) => ({
   author: one(users, {
     fields: [poems.authorId],
     references: [users.id],
+  }),
+  likes: many(likes),
+}));
+
+export const likes = pgTable(
+  'likes',
+  {
+    id: serial('id').primaryKey(),
+
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+
+    poemId: integer('poem_id')
+      .notNull()
+      .references(() => poems.id, { onDelete: 'cascade' }),
+  },
+  (table) => [
+    unique('user_poem_unique').on(table.userId, table.poemId),
+  ]
+);
+
+export const likesRelations = relations(likes, ({ one }) => ({
+  user: one(users, {
+    fields: [likes.userId],
+    references: [users.id],
+  }),
+
+  poem: one(poems, {
+    fields: [likes.poemId],
+    references: [poems.id],
   }),
 }));

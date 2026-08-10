@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
-import { poems, users } from "@/lib/db/schema";
+import { poems, users, likes } from "@/lib/db/schema";
 import { desc, asc, eq, ilike, and, sql, inArray } from "drizzle-orm";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // GET: Читання всіх віршів (сортування за датою та автором)
 export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id ? Number(session.user.id) : null;
+
   try {
     const { searchParams } = new URL(request.url);
 
@@ -41,6 +46,25 @@ export async function GET(request: Request) {
         createdAt: poems.createdAt,
         authorId: poems.authorId,
         author: users.name,
+        
+        likesCount: sql<number>`
+      (
+        SELECT COUNT(*)
+        FROM ${likes}
+        WHERE ${likes.poemId} = ${poems.id}
+      )
+    `.as("likes_count"),
+
+        liked: userId
+          ? sql<boolean>`
+          EXISTS (
+            SELECT 1
+            FROM ${likes}
+            WHERE ${likes.poemId} = ${poems.id}
+            AND ${likes.userId} = ${userId}
+          )
+        `.as("liked")
+          : sql<boolean>`false`.as("liked"),
       })
       .from(poems)
       .leftJoin(users, eq(poems.authorId, users.id))
