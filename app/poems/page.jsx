@@ -14,9 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import LikeButton from "@/components/like-btn";
-import Link from "next/link";
-import Avatar from "@/components/avatar";
+import Post from "@/components/post";
 
 // 1. Ввесь твій попередній код виносимо в окремий внутрішній компонент
 const PoemsContent = () => {
@@ -109,10 +107,6 @@ const PoemsContent = () => {
     router.push(`${window.location.pathname}?${params.toString()}`);
   };
 
-  function formatDateTime(isoString) {
-    return isoString.split("-").join(".");
-  }
-
   if (!poems || (isLoading && !poems)) return <Loader />;
 
   return (
@@ -167,25 +161,17 @@ const PoemsContent = () => {
           poems.flatMap((poem, index) => {
             const node = (
               <li className={s.poem} key={poem.id}>
-                <small className={s.poemInfo}>
-                  {poem.author ? (
-                    <Link href={`/profile/${poem.authorId}`} className={s.poemAuthor}>
-                      <Avatar avatar={poem.avatar} type={poem.avatar_type} />
-                      <p>{poem.author}</p>
-                    </Link>
-                  ) : null}
-
-                  <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
-                </small>
-
-                <h2 className={s.poemTitle}>{poem.title}</h2>
-                <p className={s.poemText + " whitespace-pre-wrap"}>
-                  {poem.content}
-                </p>
-                <LikeButton
-                  poemId={poem.id}
-                  initialLiked={poem.liked}
-                  initialCount={Number(poem.likesCount)}
+                <Post
+                  author={poem.author}
+                  authorId={poem.authorId}
+                  avatar={poem.avatar}
+                  avatar_type={poem.avatar_type}
+                  content={poem.content}
+                  date={poem.createdAt}
+                  id={poem.id}
+                  liked={poem.liked}
+                  likes={Number(poem.likesCount)}
+                  title={poem.title}
                 />
               </li>
             );

@@ -41,8 +41,8 @@ export async function GET(req: Request) {
       .select({
         id: users.id,
         name: users.name,
-            avatar: users.avatar,
-            avatar_type: users.avatar_type,
+        avatar: users.avatar,
+        avatar_type: users.avatar_type,
         mail: users.mail,
         role: users.role,
       })
@@ -89,14 +89,10 @@ export async function GET(req: Request) {
           title: poems.title,
           content: poems.content,
           createdAt: poems.createdAt,
-
-          author: {
-            id: users.id,
-            name: users.name,
-            avatar: users.avatar,
-            avatar_type: users.avatar_type,
-          },
-
+          authorId: users.id,
+          author: users.name,
+          avatar: users.avatar,
+          avatar_type: users.avatar_type,
           likesCount: sql<number>`
         (
           SELECT COUNT(*)
@@ -105,7 +101,6 @@ export async function GET(req: Request) {
         )
       `,
 
-          // Чи лайкнув ЦЕЙ ВІРШ поточний користувач
           liked: sql<boolean>`
         EXISTS (
           SELECT 1
@@ -128,14 +123,10 @@ export async function GET(req: Request) {
           title: poems.title,
           content: poems.content,
           createdAt: poems.createdAt,
-
-          author: {
-            id: users.id,
-            name: users.name,
-            avatar: users.avatar,
-            avatar_type: users.avatar_type,
-          },
-
+          authorId: users.id,
+          author: users.name,
+          avatar: users.avatar,
+          avatar_type: users.avatar_type,
           likesCount: sql<number>`
             (
               SELECT COUNT(*)

@@ -1,0 +1,29 @@
+.profile {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.user {
+  width: fit-content;
+  margin: 0 auto;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.avatar {
+  font-size: 4rem;
+  width: fit-content;
+  height: auto;
+  aspect-ratio: 1;
+  display: block;
+}
+
+.userStat {
+  gap: 2rem;
+  display: flex;
+}
+
+.userBtn {
+  height: fit-content;
+  padding: 0.2em 1em;
+}

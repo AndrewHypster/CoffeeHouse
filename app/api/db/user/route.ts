@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(request: Request) {
   try {
-    const { name, mail } = await request.json();
+    const { name, mail, avatar } = await request.json();
 
     const session = await getServerSession(authOptions);
 
@@ -22,6 +22,10 @@ export async function PATCH(request: Request) {
 
     if (typeof name === "string" && name.trim()) {
       data.name = name.trim();
+    }
+
+    if (typeof avatar === "string") {
+      data.avatar = avatar;
     }
 
     if (typeof mail === "string" && mail.trim()) {
