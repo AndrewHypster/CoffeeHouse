@@ -55,7 +55,12 @@ export async function PATCH(request: Request) {
 export async function GET() {
   try {
     const rows = await db
-      .select({ id: users.id, name: users.name })
+      .select({
+        id: users.id,
+        name: users.name,
+        avatar: users.avatar,
+        avatar_type: users.avatar_type,
+      })
       .from(users)
       .orderBy(users.id);
     return NextResponse.json(rows);

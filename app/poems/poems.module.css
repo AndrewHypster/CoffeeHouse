@@ -46,10 +46,11 @@
 }
 
 .poemAuthor {
-  font-size: 1.3em;
+  font-size: 1rem;
   font-weight: 500;
-  color: #0a7ebc;
-  text-decoration: underline;
+  align-items: baseline;
+  gap: .5rem;
+  display: flex;
 }
 
 .hr {

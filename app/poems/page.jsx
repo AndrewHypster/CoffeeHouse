@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import LikeButton from "@/components/like-btn";
 import Link from "next/link";
+import Avatar from "@/components/avatar";
 
 // 1. Ввесь твій попередній код виносимо в окремий внутрішній компонент
 const PoemsContent = () => {
@@ -166,24 +167,21 @@ const PoemsContent = () => {
           poems.flatMap((poem, index) => {
             const node = (
               <li className={s.poem} key={poem.id}>
-                <h2 className={s.poemTitle}>{poem.title}</h2>
-
-                <p className={s.poemText + " whitespace-pre-wrap"}>
-                  {poem.content}
-                </p>
-
                 <small className={s.poemInfo}>
                   {poem.author ? (
-                    <Link href={`/profile/${poem.author_id}`}>
-                      <p className={s.poemAuthor}>
-                        {typeof poem.author === "string" && poem.author}
-                      </p>
+                    <Link href={`/profile/${poem.authorId}`} className={s.poemAuthor}>
+                      <Avatar avatar={poem.avatar} type={poem.avatar_type} />
+                      <p>{poem.author}</p>
                     </Link>
                   ) : null}
 
                   <p className={s.poemDate}>{formatDateTime(poem.createdAt)}</p>
                 </small>
 
+                <h2 className={s.poemTitle}>{poem.title}</h2>
+                <p className={s.poemText + " whitespace-pre-wrap"}>
+                  {poem.content}
+                </p>
                 <LikeButton
                   poemId={poem.id}
                   initialLiked={poem.liked}

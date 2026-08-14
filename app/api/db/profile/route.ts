@@ -41,6 +41,8 @@ export async function GET(req: Request) {
       .select({
         id: users.id,
         name: users.name,
+            avatar: users.avatar,
+            avatar_type: users.avatar_type,
         mail: users.mail,
         role: users.role,
       })
@@ -91,6 +93,8 @@ export async function GET(req: Request) {
           author: {
             id: users.id,
             name: users.name,
+            avatar: users.avatar,
+            avatar_type: users.avatar_type,
           },
 
           likesCount: sql<number>`
@@ -128,6 +132,8 @@ export async function GET(req: Request) {
           author: {
             id: users.id,
             name: users.name,
+            avatar: users.avatar,
+            avatar_type: users.avatar_type,
           },
 
           likesCount: sql<number>`

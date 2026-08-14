@@ -2,6 +2,8 @@
 CREATE TABLE IF NOT EXISTS users (
   id serial PRIMARY KEY,
   name text NOT NULL,
+  avatar text,
+  avatar_type text,
   mail text,
   role text NOT NULL DEFAULT 'user',
   created_at DATE DEFAULT now() NOT NULL

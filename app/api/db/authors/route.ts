@@ -9,6 +9,8 @@ export async function GET(request: Request) {
       .select({
         id: users.id,
         name: users.name,
+            avatar: users.avatar,
+            avatar_type: users.avatar_type,
       })
       .from(users)
       .orderBy(users.id)

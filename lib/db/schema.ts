@@ -5,6 +5,8 @@ import { pgTable, serial, text, integer, date, unique, } from 'drizzle-orm/pg-co
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
+  avatar: text('avatar'),
+  avatar_type: text('avatar_type'),
   mail: text('mail'),
   role: text('role').default('user').notNull(),
   createdAt: date('created_at').defaultNow().notNull(),
