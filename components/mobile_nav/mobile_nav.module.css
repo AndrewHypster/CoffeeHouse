@@ -1,0 +1,52 @@
+.nav {
+  position: relative;
+  z-index: 90;
+  height: 3.5rem;
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: space-around;
+  display: none;
+}
+
+.nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  height: 1px;
+  width: 100%;
+  background-color: var(--foreground);
+  display: block;
+}
+
+.addList {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  padding: .4rem;
+  
+  background-color: var(--background);
+  box-shadow: 2px -2px 8px color-mix(in srgb, var(--foreground) 40%, transparent 60%);
+  border-radius: var(--radius-sm);
+  transition: all .3s;
+  gap: .5rem;
+  opacity: 0;
+  display: none;
+}
+
+.addList.active {
+  transform: translate(-50%, -100%);
+  opacity: 1;
+  display: grid;
+}
+
+.hr {
+  width: 100%;
+  height: 1px;
+  background-color: color-mix(in srgb, var(--foreground) 20%, transparent 80%);
+}
+
+@media (max-width: 600px) {
+  .nav {
+    display: flex;
+  }
+}

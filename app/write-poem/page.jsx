@@ -71,7 +71,7 @@ const WritePoem = () => {
 
   return (
     <form className={s.form} action={sendForm}>
-      <div className={s.textBox}>
+      <div className={s.textBox + ' grid-rows-[auto_1fr]'}>
         <div className={s.inputs}>
 
         <div className="flex gap-4">

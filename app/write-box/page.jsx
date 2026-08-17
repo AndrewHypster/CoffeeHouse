@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import s from "./write-poem.module.css";
+import s from "../write-poem/write-poem.module.css";
 import { Send } from "lucide-react";
 import { toast } from "@/components/ui/toast";
 

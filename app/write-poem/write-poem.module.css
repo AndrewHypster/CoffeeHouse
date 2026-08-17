@@ -1,7 +1,7 @@
 .form {
-  background-color: var(--chart-3);
-  padding: 1rem;
-  overflow: hidden;
+  height: 100%;
+  grid-template-rows: 1fr auto;
+  display: grid;
 }
 
 .textBox,
@@ -12,6 +12,12 @@
   color: #164faaee;
   font-size: 2rem;
   line-height: 1.2em;
+  box-sizing: border-box;
+  background-color: var(--background);
+  background-image:
+    linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+  background-size: 0.5em 0.5em;
 }
 
 .checkBtn {
@@ -38,7 +44,6 @@
 
 .inputs {
   width: 100%;
-  overflow: hidden;
 }
 
 .input {
@@ -49,16 +54,10 @@
 .textBox {
   position: relative;
   max-width: 800px;
-  margin: auto;
-  margin-top: 1.5rem;
+  height: 100%;
+  margin: 0 auto;
   padding: 0.5em;
-  padding-bottom: 6rem;
-  box-sizing: border-box;
-  background-color: var(--background);
-  background-image:
-    linear-gradient(to right, #e0e0e0 1px, transparent 1px),
-    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-  background-size: 0.5em 0.5em;
+  display: grid;
 }
 
 .textBox::before {
@@ -75,12 +74,8 @@
 }
 
 .formNav {
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  bottom: 2rem;
-  width: 100%;
-  padding: 0 2rem;
+  height: fit-content;
+  margin: .5rem;
   justify-content: center;
   display: flex;
 }
@@ -88,10 +83,10 @@
 @media (max-width: 680px) {
   .form {
     padding: 0;
-    padding-top: 0.5rem;
+    /* padding-top: 0.5rem; */
   }
   .textBox {
-    padding-bottom: 7rem;
+    /* padding-bottom: 7rem; */
   }
   .formNav {
     scale: 1.2;
