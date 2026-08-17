@@ -6,10 +6,11 @@ import s from "./header.module.css";
 import { Button } from "../ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
+import { LogIn, LogOut } from "lucide-react";
 
 const Header = () => {
   const { status } = useSession();
-  
+
   return (
     <header className={s.header}>
       <div className="flex gap-2">
@@ -28,16 +29,18 @@ const Header = () => {
         <Link className={s.link} href="/write-poem">
           Написати вірш
         </Link>
-        {status === "loading" ? (
-          <></>
-        ) : status === "authenticated" ? (
-          <Button onClick={() => signOut({ callbackUrl: "/" })}>Вийти</Button>
-        ) : (
-          <Button onClick={() => signIn("google", { callbackUrl: "/" })}>
-            Увійти
-          </Button>
-        )}
       </nav>
+      {status === "loading" ? (
+        <></>
+      ) : status === "authenticated" ? (
+        <Button className='w-fit ml-[auto]' onClick={() => signOut({ callbackUrl: "/" })}>
+          Вийти <LogOut />
+        </Button>
+      ) : (
+        <Button className='w-fit ml-[auto]' onClick={() => signIn("google", { callbackUrl: "/" })}>
+          Увійти <LogIn />
+        </Button>
+      )}
     </header>
   );
 };
