@@ -88,7 +88,7 @@
   .textBox {
     /* padding-bottom: 7rem; */
   }
-  .formNav {
+  .formNav button {
     scale: 1.2;
   }
 }

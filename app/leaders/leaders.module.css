@@ -1,0 +1,121 @@
+.content {
+  width: fit-content;
+  margin: 2rem auto 4rem;
+  gap: 2rem;
+  display: grid;
+}
+
+.tableSection {
+}
+
+.tableTitle {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.table {
+  margin-top: 1rem;
+}
+
+.tableTop {
+  align-items: end;
+  grid-template-columns: auto 1fr auto;
+  gap: 2rem;
+  display: grid;
+}
+
+.topLeader {
+  text-align: center;
+}
+
+.topLeader .avatar {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+  font-size: 2em;
+  display: block;
+}
+
+.topLeader .avatar::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 50%;
+  transform: translate(-50%, -50%);
+  width: 140%;
+  aspect-ratio: 1;
+  background: linear-gradient(-45deg, var(--color) 30%, white, var(--color) 70%);
+  border: .08em solid color-mix(in srgb, var(--color) 70%, var(--foreground) 30%);
+  border-radius: 50%;
+  display: block;
+}
+
+.topLeader:nth-child(1) {
+  order: 2;
+  --color: gold;
+}
+.topLeader:nth-child(1) .avatar {
+  font-size: 3em;
+}
+.topLeader:nth-child(2) {
+  order: 1;
+  --color: orange;
+}
+.topLeader:nth-child(3) {
+  order: 3;
+  --color: silver;
+}
+
+.trophy {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transform: translateX(90%);
+  width: 1.8rem;
+  height: 1.8rem;
+  color: color-mix(in srgb, var(--color) 50%, var(--foreground) 50%);
+  fill: var(--color);
+}
+
+.topLeader:nth-child(1) .trophy {
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
+.tableTop .info {
+  margin-top: .8rem;
+  line-height: 1em;
+}
+
+.others {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.others li {
+  padding: .4rem;
+  list-style: none;
+}
+
+.others li:nth-child(even) {
+  background: color-mix(in srgb, var(--foreground) 10%, transparent 90%);
+}
+
+.other {
+  display: grid;
+  grid-template-columns: 15px 55px 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  line-height: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
