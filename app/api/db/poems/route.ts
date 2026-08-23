@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
+    const postId = Math.max(1, parseInt(searchParams.get("post-id")));
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
     const limit = Math.min(50, parseInt(searchParams.get("limit") || "10"));
     const offset = (page - 1) * limit;
@@ -37,8 +38,79 @@ export async function GET(request: Request) {
       }
     }
 
-    // Використовуємо звичайний select з join замість db.query
-    const result = await db
+    // =========================================================
+    // ОДИН ПОСТ
+    // =========================================================
+
+    if (postId !== null && !Number.isNaN(postId)) {
+      if (session) {
+        const result = await db
+          .select({
+            id: poems.id,
+            title: poems.title,
+            content: poems.content,
+            createdAt: poems.createdAt,
+            authorId: poems.authorId,
+            author: users.name,
+            avatar: users.avatar,
+            avatar_type: users.avatar_type,
+
+            likesCount: sql<number>`
+              (
+                SELECT COUNT(*)
+                FROM ${likes}
+                WHERE ${likes.poemId} = ${poems.id}
+              )
+            `.as("likes_count"),
+
+            liked: userId
+              ? sql<boolean>`
+                  EXISTS (
+                    SELECT 1
+                    FROM ${likes}
+                    WHERE ${likes.poemId} = ${poems.id}
+                    AND ${likes.userId} = ${userId}
+                  )
+                `.as("liked")
+              : sql<boolean>`false`.as("liked"),
+          })
+          .from(poems)
+          .leftJoin(users, eq(poems.authorId, users.id))
+          .where(eq(poems.id, postId));
+
+        return NextResponse.json(
+          {
+            post: result[0] ?? null,
+          },
+          { status: 200 },
+        );
+      } else {
+        const result = await db
+          .select({
+            id: poems.id,
+            title: poems.title,
+            content: poems.content,
+            createdAt: poems.createdAt,
+          })
+          .from(poems)
+          .where(eq(poems.id, postId));
+
+        return NextResponse.json(
+          {
+            post: result[0] ?? null,
+          },
+          { status: 200 },
+        );
+      }
+    }
+
+    // =========================================================
+    // СПИСОК ПОСТІВ
+    // =========================================================
+
+    let result
+    if (session) {
+      result = await db
       .select({
         id: poems.id,
         title: poems.title,
@@ -74,6 +146,21 @@ export async function GET(request: Request) {
       .orderBy(desc(poems.createdAt), asc(poems.authorId))
       .limit(limit)
       .offset(offset);
+    } else {
+     result = await db
+      .select({
+        id: poems.id,
+        title: poems.title,
+        content: poems.content,
+        createdAt: poems.createdAt,
+      })
+      .from(poems)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(poems.createdAt), asc(poems.authorId))
+      .limit(limit)
+      .offset(offset);
+    }
+    
 
     // total count for pagination
     const countRes = await db.select({ count: sql`count(*)` }).from(poems);

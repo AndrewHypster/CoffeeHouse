@@ -31,12 +31,12 @@ export const NAV_CONFIG = [
         title: "Вірш",
         url: "/write-poem",
         icon: "Pencil",
-        roles: ["guest", "user", "admin"],
+        roles: ["user", "admin"],
       },{
         title: "В скриню",
         url: "/write-box",
         icon: "Inbox",
-        roles: ["guest", "user", "admin"],
+        roles: ["user", "admin"],
       },
     ],
 
@@ -56,13 +56,3 @@ export function getAllRoutes() {
   }
   return Array.from(routes);
 }
-
-// Static routes array (explicit literal) for build-time/static analysis (used by middleware)
-export const ROUTES = [
-  "/",
-  "/poems",
-  "/write-poem",
-  "/profile",
-  "/dashboard",
-  "/dashboard/:path*",
-];

@@ -6,7 +6,7 @@
   color: var(--background);
   padding: 0.75rem 1.5rem;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr auto;
   gap: 1rem;
   align-items: center;
   position: relative;

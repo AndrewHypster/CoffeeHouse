@@ -5,7 +5,6 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import s from "./header.module.css";
 import { Button } from "../ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useEffect } from "react";
 import { LogIn, LogOut } from "lucide-react";
 
 const Header = () => {
@@ -22,14 +21,14 @@ const Header = () => {
         </div>
       </div>
 
-      <nav className={s.nav}>
+      {/* <nav className={s.nav}>
         <Link className={s.link} href="/poems">
           Вірші
         </Link>
         <Link className={s.link} href="/write-poem">
           Написати вірш
         </Link>
-      </nav>
+      </nav> */}
       {status === "loading" ? (
         <></>
       ) : status === "authenticated" ? (

@@ -15,11 +15,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Post from "@/components/post";
+import { useSession } from "next-auth/react";
 
 // 1. Ввесь твій попередній код виносимо в окремий внутрішній компонент
 const PoemsContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const {data: session} = useSession()
 
   const [poems, setPoems] = useState(null);
   const [pagesCount, setPagesCount] = useState(1);
@@ -55,7 +58,7 @@ const PoemsContent = () => {
         console.error(err);
       }
     };
-    getAuthors();
+    if (session) getAuthors();
   }, []);
 
   useEffect(() => {
@@ -111,48 +114,50 @@ const PoemsContent = () => {
 
   return (
     <div className={s.page}>
-      <div className={s.filter}>
-        <b className={s.filterTitle}>Фільтрація</b>
-        <div className={s.filterInpts}>
-          <input
-            className={s.filterInpt}
-            type="text"
-            placeholder="Назва"
-            value={search}
-            onChange={(e) => {
-              const val = e.target.value;
-              setSearch(val);
-              setPage(1);
-              updateUrlParams(val, author, 1);
-            }}
-          />
-          {authors && (
-            <Select
-              value={author || "Всі"}
-              onValueChange={(value) => {
-                setAuthor(value);
+      {session && (
+        <div className={s.filter}>
+          <b className={s.filterTitle}>Фільтрація</b>
+          <div className={s.filterInpts}>
+            <input
+              className={s.filterInpt}
+              type="text"
+              placeholder="Назва"
+              value={search}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearch(val);
                 setPage(1);
-                updateUrlParams(search, value, 1);
+                updateUrlParams(val, author, 1);
               }}
-            >
-              <SelectTrigger className="w-full max-w-48">
-                <SelectValue placeholder="Виберіть автора" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Автор</SelectLabel>
-                  <SelectItem value={false}>Всі</SelectItem>
-                  {authors.map((item) => (
-                    <SelectItem key={item.id} value={item.name}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          )}
+            />
+            {authors && (
+              <Select
+                value={author || "Всі"}
+                onValueChange={(value) => {
+                  setAuthor(value);
+                  setPage(1);
+                  updateUrlParams(search, value, 1);
+                }}
+              >
+                <SelectTrigger className="w-full max-w-48">
+                  <SelectValue placeholder="Виберіть автора" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Автор</SelectLabel>
+                    <SelectItem value={false}>Всі</SelectItem>
+                    {authors.map((item) => (
+                      <SelectItem key={item.id} value={item.name}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <ul className={s.list}>
         {poems.length === 0 ? (

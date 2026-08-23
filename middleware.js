@@ -18,11 +18,11 @@ export default withAuth({
 // Use explicit routes here for middleware.
 export const config = {
   matcher: [
-    "/",
-    "/poems",
-    "/write-poem",
-    "/profile",
-    "/dashboard",
-    "/dashboard/:path*",
-  ],
+  "/write-poem",
+  "/write-box",
+  "/profile",
+  "/leaders",
+  "/dashboard",
+  "/dashboard/:path*",
+]
 };
