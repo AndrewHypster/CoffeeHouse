@@ -1,0 +1,9 @@
+.forPC {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .forPC {
+    display: none;
+  }
+}

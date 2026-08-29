@@ -1,0 +1,15 @@
+.info {
+  align-items: baseline;
+  gap: 1rem;
+  display: flex;
+}
+
+.author {
+  align-items: baseline;
+  gap: .5rem;
+  display: flex;
+}
+
+.text {
+  padding-left: .7rem;
+}

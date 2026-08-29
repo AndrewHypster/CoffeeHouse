@@ -18,34 +18,29 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    // async signIn({ user }) {
-    //   if (!user.email) return false;
-
-    //   const existingUser = await db.query.users.findFirst({
-    //     where: eq(users.mail, user.email),
-    //   });
-
-    //   if (!existingUser) {
-    //     await db.insert(users).values({
-    //       name: user.name,
-    //       mail: user.email,
-    //       role: "user",
-    //     });
-    //   }
-
-    //   return true;
-    // },
-
     async signIn({ user }) {
       if (!user.email) return false;
 
-      const existing = await db.query.users.findFirst({
+      const existingUser = await db.query.users.findFirst({
         where: eq(users.mail, user.email),
       });
 
-      if (existing) return true;
+      if (!existingUser) {
+        try {
+          await db.insert(users).values({
+            name: user.name,
+            mail: user.email,
+            role: "user",
+            avatar: "👤",
+            avatar_type: "smile",
+          });
+        } catch (error) {
+          console.error("CREATE USER ERROR:", error);
+          throw error;
+        }
+      }
 
-      return `/link-account?email=${encodeURIComponent(user.email)}`;
+      return true;
     },
 
     async jwt({ token, user, trigger, session }) {
@@ -82,10 +77,6 @@ export const authOptions: NextAuthOptions = {
         if (session?.user?.image) {
           token.image = session.user.image;
         }
-      }
-
-      if (token.email === "nickudodik@gmail.com") {
-        token.role = "admin";
       }
 
       return token;

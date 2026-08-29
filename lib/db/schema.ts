@@ -12,6 +12,11 @@ export const users = pgTable('users', {
   createdAt: date('created_at').defaultNow().notNull(),
 });
 
+export const usersRelations = relations(users, ({ many }) => ({
+  poems: many(poems),
+  likes: many(likes),
+}));
+
 export const poems = pgTable('poems', {
   id: serial('id').primaryKey(),
   authorId: integer('author_id')
@@ -21,17 +26,6 @@ export const poems = pgTable('poems', {
   createdAt: date('created_at').defaultNow().notNull(),
 });
 
-export const box = pgTable('box', {
-  id: serial('id').primaryKey(),
-  text: text('Текст'),
-  date: date('Дата').notNull(),
-});
-
-export const usersRelations = relations(users, ({ many }) => ({
-  poems: many(poems),
-  likes: many(likes),
-}));
-
 export const poemsRelations = relations(poems, ({ one, many }) => ({
   author: one(users, {
     fields: [poems.authorId],
@@ -39,6 +33,12 @@ export const poemsRelations = relations(poems, ({ one, many }) => ({
   }),
   likes: many(likes),
 }));
+
+export const box = pgTable('box', {
+  id: serial('id').primaryKey(),
+  text: text('Текст'),
+  date: date('Дата').notNull(),
+});
 
 export const likes = pgTable(
   'likes',
@@ -69,3 +69,38 @@ export const likesRelations = relations(likes, ({ one }) => ({
     references: [poems.id],
   }),
 }));
+
+export const comments = pgTable('comments', {
+  id: serial('id').primaryKey(),
+  authorId: integer('author_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  poemId: integer('poem_id')
+    .notNull()
+    .references(() => poems.id, { onDelete: 'cascade' }),
+  parentId: integer('parent_id'),
+  content: text('content').notNull(),
+  createdAt: date('created_at').defaultNow().notNull(),
+});
+
+export const commentsRelations = relations(
+  comments,
+  ({ one, many }) => ({
+    author: one(users, {
+      fields: [comments.authorId],
+      references: [users.id],
+    }),
+    poem: one(poems, {
+      fields: [comments.poemId],
+      references: [poems.id],
+    }),
+    parent: one(comments, {
+      fields: [comments.parentId],
+      references: [comments.id],
+      relationName: 'commentReplies',
+    }),
+    replies: many(comments, {
+      relationName: 'commentReplies',
+    }),
+  }),
+);

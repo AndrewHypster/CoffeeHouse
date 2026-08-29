@@ -6,6 +6,8 @@ import Avatar from "../avatar";
 import LikeButton from "../like-btn";
 import { useSession } from "next-auth/react";
 import ShareButton from "../share-btn";
+import { MessageCircle } from "lucide-react";
+import { useComments } from "../comments/provider";
 
 function formatDateTime(isoString) {
   return isoString.split("-").join(".");
@@ -24,6 +26,7 @@ const Post = ({
   likes,
 }) => {
   const {data: session} = useSession();
+  const { setIsOpen } = useComments()
 
   return (
     <>
@@ -40,15 +43,16 @@ const Post = ({
 
       <h2 className={s.poemTitle}>{title}</h2>
       <p className={s.poemText + " whitespace-pre-wrap"}>{content}</p>
-      {session && <><LikeButton
-        poemId={id}
-        initialLiked={liked}
-        initialCount={Number(likes)}
-      />
-
-      <ShareButton link={`/poems/${id}`} />
-      
-      </>}
+      {session &&
+      <div className="flex gap-[.4rem]">
+        <LikeButton
+          poemId={id}
+          initialLiked={liked}
+          initialCount={Number(likes)}
+        />
+        <MessageCircle onClick={()=>setIsOpen(true)} size={18} />
+        <ShareButton link={`/poems/${id}`} />
+      </div>}
       
     </>
   );

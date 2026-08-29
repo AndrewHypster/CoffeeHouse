@@ -5,6 +5,7 @@ import AppSidebarClient from "@/components/AppSidebarClient";
 import AllProviders from "@/components/allProviders";
 import { Toaster } from "@/components/ui/toast";
 import MobileNavigation from "@/components/mobile_nav";
+import CommentBox from "@/components/comments";
 
 // Налаштовуємо шрифт Inter
 const inter = Inter({
@@ -27,7 +28,7 @@ export default function RootLayout({ children }) {
           <div className="wrapper">
             <Header />
             <div className="page">{children}</div>
-            
+            {/* <CommentBox /> */}
             <MobileNavigation />
           </div>
      

@@ -3,12 +3,15 @@
 import { SessionProvider } from "next-auth/react";
 import { SidebarProvider } from "./ui/sidebar";
 import { ToastProvider } from "./ui/toast";
+import { CommentsProvider } from "./comments/provider";
 
 const AllProviders = ({ children }) => {
   return (
     <SessionProvider>
       <SidebarProvider>
-        <ToastProvider>{children}</ToastProvider>
+        <CommentsProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </CommentsProvider>
       </SidebarProvider>
     </SessionProvider>
   );
