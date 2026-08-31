@@ -1,18 +1,10 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 
 const CommentsContext = createContext(null);
 
-export const CommentsProvider = ({
-  children,
-  initialComments,
-}) => {
+export const CommentsProvider = ({ children }) => {
   const [comments, setComments] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [postId, setPostId] = useState(null);
@@ -21,13 +13,30 @@ export const CommentsProvider = ({
     setIsOpen((prev) => !prev);
   };
 
+  const addComment = (comment) => {
+    console.log("NEW:", comment);
+
+setComments((prev) => {
+  const next = [...prev, comment];
+
+  console.log(
+    "NEXT IDS:",
+    next.map((comment) => comment.id)
+  );
+
+  return next;
+});}
+
   return (
     <CommentsContext.Provider
       value={{
         postId,
         setPostId,
+
         comments,
         setComments,
+        addComment,
+
         isOpen,
         setIsOpen,
         toggleComments,

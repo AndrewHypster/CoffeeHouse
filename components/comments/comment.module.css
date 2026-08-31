@@ -1,7 +1,13 @@
-.info {
-  align-items: baseline;
-  gap: 1rem;
+.info a {
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: .5rem;
   display: flex;
+}
+
+.info * {
+  text-wrap: nowrap;
+  line-height: 1.2em;
 }
 
 .author {
@@ -15,5 +21,5 @@
 }
 
 .text {
-  padding-left: .7rem;
+  padding-left: 0rem;
 }

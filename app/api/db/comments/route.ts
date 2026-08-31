@@ -79,7 +79,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const newComment = await db
+  const [createdComment] = await db
     .insert(comments)
     .values({
       authorId: userId,
@@ -87,7 +87,43 @@ export async function POST(request: Request) {
       parentId: parentId ? Number(parentId) : null,
       content: content.trim(),
     })
-    .returning();
+    .returning({
+      id: comments.id,
+      content: comments.content,
+      createdAt: comments.createdAt,
+
+      authorId: comments.authorId,
+      parentId: comments.parentId,
+    });
+
+  if (!createdComment) {
+    return Response.json(
+      { error: "Failed to create comment" },
+      { status: 500 }
+    );
+  }
+
+  // Отримуємо дані користувача для нового коментаря
+  const [user] = await db
+    .select({
+      author: users.name,
+      avatar: users.avatar,
+      avatar_type: users.avatar_type,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  const newComment = {
+    ...createdComment,
+
+    author: user?.author ?? null,
+    avatar: user?.avatar ?? null,
+    avatar_type: user?.avatar_type ?? null,
+
+    likesCount: 0,
+    liked: false,
+  };
 
   return Response.json(newComment, { status: 201 });
 }

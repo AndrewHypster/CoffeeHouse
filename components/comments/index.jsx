@@ -5,7 +5,7 @@ import sPc from "./comments-pc.module.css";
 import sMob from "./comments-mobile.module.css";
 import Avatar from "../avatar";
 import Link from "next/link";
-import { CommentsProvider, useComments } from "./provider";
+import { useComments } from "./provider";
 import { useEffect, useMemo, useState } from "react";
 
 const Comment = ({
@@ -22,10 +22,11 @@ const Comment = ({
       <div className={s.info}>
         <Link className={s.author} href={`/profile/${authorId}`}>
           <Avatar avatar={avatar} type={avatar_type} />
-          <b>{author}</b>
+          <div className="grid">
+            <b>{author}</b>
+            <small className="text-[.7em]">{createdAt}</small>
+          </div>
         </Link>
-
-        <small>{createdAt}</small>
       </div>
 
       <p className={s.text}>{content}</p>
@@ -80,7 +81,7 @@ const ForPC = () => {
   );
 };
 
-const ForMobile = ({ isOpen, setIsOpen, comments, postId, setComments }) => {
+const ForMobile = ({ isOpen, setIsOpen, comments, postId, addComment }) => {
   const [content, setContent] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   const [isSending, setIsSending] = useState(false);
@@ -107,33 +108,25 @@ const ForMobile = ({ isOpen, setIsOpen, comments, postId, setComments }) => {
 
   const submitComment = async (e) => {
     e.preventDefault();
-
     const text = content.trim();
-
     if (!text || !postId || isSending) return;
-
     setIsSending(true);
-
     try {
       const response = await fetch("/api/db/comments", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           postId,
           content: text,
           parentId: replyTo?.id ?? null,
         }),
       });
-
       if (!response.ok) {
         throw new Error("Не вдалося додати коментар");
       }
-
       const newComment = await response.json();
 
-      setComments((prev) => [...prev, newComment]);
+      addComment(newComment);
 
       setContent("");
       setReplyTo(null);
@@ -216,7 +209,8 @@ const ForMobile = ({ isOpen, setIsOpen, comments, postId, setComments }) => {
 };
 
 const CommentBox = () => {
-  const { postId, comments, setComments, isOpen, setIsOpen } = useComments();
+  const { postId, comments, setComments, addComment, isOpen, setIsOpen } =
+    useComments();
 
   useEffect(() => {
     if (!postId) return;
@@ -230,19 +224,21 @@ const CommentBox = () => {
     };
 
     loadComments();
-  }, [postId]);
+  }, [postId, setComments]);
 
   return (
-    <CommentsProvider initialComments={comments}>
+    <>
       <ForPC isOpen={isOpen} setIsOpen={setIsOpen} comments={comments} />
+
       <ForMobile
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         comments={comments}
         postId={postId}
         setComments={setComments}
+        addComment={addComment}
       />
-    </CommentsProvider>
+    </>
   );
 };
 
