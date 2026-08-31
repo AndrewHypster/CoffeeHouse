@@ -22,10 +22,6 @@
   transition: all .3s;
 }
 
-.content.active {
-  transform: translateY(0);
-}
-
 .title {
   position: sticky;
   top: 0;
@@ -35,12 +31,11 @@
   background-color: var(--background);
 }
 
-.comments {
-  padding: 0 .5rem;
-}
-
 @media (max-width: 600px) {
   .forMobile.active {
     display: flex;
+  }
+  .forMobile.active .content {
+    transform: translateY(0);
   }
 }

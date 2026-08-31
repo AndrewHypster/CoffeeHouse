@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import s from "./comment.module.css";
 import sPc from "./comments-pc.module.css";
@@ -6,22 +6,69 @@ import sMob from "./comments-mobile.module.css";
 import Avatar from "../avatar";
 import Link from "next/link";
 import { CommentsProvider, useComments } from "./provider";
+import { useEffect, useMemo, useState } from "react";
 
-const Comment = () => {
+const Comment = ({
+  authorId,
+  avatar,
+  avatar_type,
+  author,
+  createdAt,
+  content,
+  onReply,
+}) => {
   return (
     <div className={s.comment}>
       <div className={s.info}>
-        <Link className={s.author} href="/profile/0">
-          <Avatar avatar={"?"} type={"smile"} />
-          <b>Анонім</b>
+        <Link className={s.author} href={`/profile/${authorId}`}>
+          <Avatar avatar={avatar} type={avatar_type} />
+          <b>{author}</b>
         </Link>
-        <small>2026.08.26</small>
+
+        <small>{createdAt}</small>
       </div>
 
-      <p className={s.text}>
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nesciunt quis voluptas doloribus unde, aliquid officiis deleniti magni natus vero amet.
-      </p>
+      <p className={s.text}>{content}</p>
+
+      <button
+        type="button"
+        className="mt-1 text-xs text-gray-500 hover:text-black"
+        onClick={onReply}
+      >
+        Відповісти
+      </button>
     </div>
+  );
+};
+
+const CommentItem = ({ comment, repliesMap, onReply }) => {
+  const replies = repliesMap.get(comment.id) ?? [];
+
+  return (
+    <li>
+      <Comment
+        authorId={comment.authorId}
+        avatar={comment.avatar}
+        avatar_type={comment.avatar_type}
+        author={comment.author}
+        createdAt={comment.createdAt}
+        content={comment.content}
+        onReply={() => onReply(comment)}
+      />
+
+      {replies.length > 0 && (
+        <ul className="pl-[1.5rem]">
+          {replies.map((reply) => (
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              repliesMap={repliesMap}
+              onReply={onReply}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
   );
 };
 
@@ -33,47 +80,168 @@ const ForPC = () => {
   );
 };
 
-const ForMobile = () => {
-  const { isOpen } = useComments()
+const ForMobile = ({ isOpen, setIsOpen, comments, postId, setComments }) => {
+  const [content, setContent] = useState("");
+  const [replyTo, setReplyTo] = useState(null);
+  const [isSending, setIsSending] = useState(false);
+
+  const repliesMap = useMemo(() => {
+    const map = new Map();
+
+    for (const comment of comments) {
+      if (comment.parentId === null) continue;
+
+      const replies = map.get(comment.parentId) ?? [];
+
+      replies.push(comment);
+
+      map.set(comment.parentId, replies);
+    }
+
+    return map;
+  }, [comments]);
+
+  const mainComments = useMemo(() => {
+    return comments.filter((comment) => comment.parentId === null);
+  }, [comments]);
+
+  const submitComment = async (e) => {
+    e.preventDefault();
+
+    const text = content.trim();
+
+    if (!text || !postId || isSending) return;
+
+    setIsSending(true);
+
+    try {
+      const response = await fetch("/api/db/comments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId,
+          content: text,
+          parentId: replyTo?.id ?? null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Не вдалося додати коментар");
+      }
+
+      const newComment = await response.json();
+
+      setComments((prev) => [...prev, newComment]);
+
+      setContent("");
+      setReplyTo(null);
+    } catch (error) {
+      console.error("CREATE COMMENT ERROR:", error);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleReply = (comment) => {
+    console.log("Відповідаю на:", comment.id, comment.author);
+    setReplyTo(comment);
+  };
 
   return (
-    <div className={`${sMob.forMobile} ${isOpen}`}>
-      <div className={sMob.content}>
+    <div
+      className={`${sMob.forMobile} ${isOpen ? sMob.active : ""}`}
+      onClick={() => setIsOpen(false)}
+    >
+      <div className={sMob.content} onClick={(e) => e.stopPropagation()}>
         <h3 className={sMob.title}>
           Коментарі <hr />
         </h3>
+
         <ul className={sMob.comments}>
-          <li>
-            <Comment />
-          </li>
-          <li>
-            <Comment />
-          </li>
-          <li>
-            <Comment />
-          </li>
-          <li>
-            <Comment />
-          </li>
-          <li>
-            <Comment />
-          </li>
-          <li>
-            <Comment />
-          </li>
+          {mainComments.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              repliesMap={repliesMap}
+              onReply={handleReply}
+            />
+          ))}
         </ul>
+        <form
+          onSubmit={submitComment}
+          className="sticky bottom-0 mt-auto border-t bg-white p-3"
+        >
+          {replyTo && (
+            <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
+              <span>
+                Відповідь для <b>{replyTo.author}</b>
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setReplyTo(null)}
+                className="text-gray-400 hover:text-black"
+              >
+                Скасувати
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-end gap-2">
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder={
+                replyTo ? "Написати відповідь..." : "Додати коментар..."
+              }
+              rows={1}
+              maxLength={1000}
+              className="min-h-[42px] flex-1 resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none transition focus:border-gray-400 focus:bg-white"
+            />
+
+            <button
+              type="submit"
+              disabled={!content.trim() || isSending}
+              className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-black text-white transition hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-30"
+            >
+              {isSending ? "..." : "↑"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
 const CommentBox = () => {
-  const comments = []
+  const { postId, comments, setComments, isOpen, setIsOpen } = useComments();
+
+  useEffect(() => {
+    if (!postId) return;
+
+    const loadComments = async () => {
+      const response = await fetch(`/api/db/comments?postId=${postId}`);
+
+      const data = await response.json();
+
+      setComments(data);
+    };
+
+    loadComments();
+  }, [postId]);
 
   return (
     <CommentsProvider initialComments={comments}>
-      <ForPC  />
-      <ForMobile />
+      <ForPC isOpen={isOpen} setIsOpen={setIsOpen} comments={comments} />
+      <ForMobile
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        comments={comments}
+        postId={postId}
+        setComments={setComments}
+      />
     </CommentsProvider>
   );
 };

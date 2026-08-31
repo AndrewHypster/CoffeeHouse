@@ -13,12 +13,9 @@ export const CommentsProvider = ({
   children,
   initialComments,
 }) => {
-  const [comments, setComments] = useState(initialComments);
+  const [comments, setComments] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    console.log('comments is ', isOpen)
-  }, [isOpen])
+  const [postId, setPostId] = useState(null);
 
   const toggleComments = () => {
     setIsOpen((prev) => !prev);
@@ -27,6 +24,8 @@ export const CommentsProvider = ({
   return (
     <CommentsContext.Provider
       value={{
+        postId,
+        setPostId,
         comments,
         setComments,
         isOpen,

@@ -10,6 +10,10 @@
   display: flex;
 }
 
+.comment {
+  padding-left: .5rem;
+}
+
 .text {
   padding-left: .7rem;
 }

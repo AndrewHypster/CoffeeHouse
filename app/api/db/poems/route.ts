@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/index";
-import { poems, users, likes } from "@/lib/db/schema";
+import { poems, users, likes, comments } from "@/lib/db/schema";
 import { desc, asc, eq, ilike, and, sql, inArray } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

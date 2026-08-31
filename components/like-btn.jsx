@@ -45,13 +45,13 @@ export default function LikeButton({
   return (
     <Button
       variant="ghost"
-      size="sm"
+      size={'18px'}
       onClick={handleLike}
       disabled={loading}
       className="gap-1"
     >
       <Heart
-        size={18}
+        size={'18px'}
         className={liked ? "fill-current" : ""}
       />
 

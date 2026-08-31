@@ -78,7 +78,10 @@ export const comments = pgTable('comments', {
   poemId: integer('poem_id')
     .notNull()
     .references(() => poems.id, { onDelete: 'cascade' }),
-  parentId: integer('parent_id'),
+  parentId: integer('parent_id')
+  .references(() => comments.id, {
+    onDelete: 'cascade',
+  }),
   content: text('content').notNull(),
   createdAt: date('created_at').defaultNow().notNull(),
 });
@@ -103,4 +106,29 @@ export const commentsRelations = relations(
       relationName: 'commentReplies',
     }),
   }),
+);
+
+export const commentLikes = pgTable(
+  'comment_likes',
+  {
+    id: serial('id').primaryKey(),
+
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id, {
+        onDelete: 'cascade',
+      }),
+
+    commentId: integer('comment_id')
+      .notNull()
+      .references(() => comments.id, {
+        onDelete: 'cascade',
+      }),
+  },
+  (table) => ({
+    uniqueLike: unique().on(
+      table.userId,
+      table.commentId
+    ),
+  })
 );

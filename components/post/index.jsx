@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Link from "next/link";
 import s from "./post.module.css";
@@ -25,8 +25,8 @@ const Post = ({
   liked,
   likes,
 }) => {
-  const {data: session} = useSession();
-  const { setIsOpen } = useComments()
+  const { data: session } = useSession();
+  const { setPostId, setIsOpen } = useComments();
 
   return (
     <>
@@ -43,17 +43,23 @@ const Post = ({
 
       <h2 className={s.poemTitle}>{title}</h2>
       <p className={s.poemText + " whitespace-pre-wrap"}>{content}</p>
-      {session &&
-      <div className="flex gap-[.4rem]">
-        <LikeButton
-          poemId={id}
-          initialLiked={liked}
-          initialCount={Number(likes)}
-        />
-        <MessageCircle onClick={()=>setIsOpen(true)} size={18} />
-        <ShareButton link={`/poems/${id}`} />
-      </div>}
-      
+      {session && (
+        <div className="flex gap-[.8rem]">
+          <LikeButton
+            poemId={id}
+            initialLiked={liked}
+            initialCount={Number(likes)}
+          />
+          <button>
+            <MessageCircle onClick={() => {
+              setPostId(id)
+              setIsOpen(true)
+              }} size={18} />
+          </button>
+
+          <ShareButton link={`/poems/${id}`} />
+        </div>
+      )}
     </>
   );
 };

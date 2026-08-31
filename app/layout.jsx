@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
           <div className="wrapper">
             <Header />
             <div className="page">{children}</div>
-            {/* <CommentBox /> */}
+            <CommentBox />
             <MobileNavigation />
           </div>
      
